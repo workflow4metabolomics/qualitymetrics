@@ -1,0 +1,81 @@
+<tool id="filters_specific" name="filters [specific]" version="stat_2014.08.22">
+  <description>Removes columns/rows according to : blank , CV, pool, pvalue, VIP</description>
+  <command></command>
+  
+  <inputs>
+    <param name="dataMatrix_in" type="data" label="Data Matrix file " help="" format="tabular" />
+    <param name="sampleMetadata_in" type="data" label="Sample metadata file " help="" format="tabular" />
+    <param name="variableMetadata_in" type="data" label="Variable metadata file " help="" format="tabular" />
+    
+    <param name="Blank" type="select" label="Blank deletion " help="">
+        <option value="FALSE">no</option>
+        <option value="TRUE">yes</option>
+    </param>
+	
+    <conditional name="CV_condition">
+      <param name="CV" type="select" label="Coefficient of Variation " help="">
+        <option value="FALSE">no</option>
+        <option value="TRUE">yes</option>
+      </param>
+      <when value="TRUE">
+        <param name="Compa" label="Which type of CV filter should be used " type="select" display="radio" help="">
+          <option value="TRUE">comparison between pool and sample CVs</option>
+          <option value="FALSE">filter according to pool CV</option>
+        </param>
+        <param name="seuil" type="float" label="Threshold " value="1.25" min="0.0000000000000001" help="if comparing pool and sample CVs, corresponds to the max ratio tolerated (basicly between 1.0 and 1.25) ; else corresponds to the max pool CV tolerated (basicly 0.3)"/>
+      </when>
+    </conditional>
+	
+    <param name="POOL" type="select" label="Pool deletion " help="">
+        <option value="FALSE">no</option>
+        <option value="TRUE">yes</option>
+    </param>
+	
+    <conditional name="testpval_condition">
+      <param name="testpval" type="select" label="Filtering according to p-values " help="">
+          <option value="FALSE">no</option>
+          <option value="TRUE">yes</option>
+      </param>
+      <when value="TRUE">
+        <param name="pcol" label="Column of p-values " type="data_column" data_ref="variableMetadata_in" accept_default="true" />
+        <param name="pvalue" type="float" label="p-value threshold for filter "  optional="true" value="0.05" min="0.0000000000000001" max="1" help="should be between 0 and 1 ; Variables having a p-value greater than this p-value limit will be removed"/>
+      </when>
+    </conditional>
+	
+    <conditional name="vip_condition">
+      <param name="vip" type="select" label="Filtering according to VIP " help="">
+          <option value="FALSE">no</option>
+          <option value="TRUE">yes</option>
+      </param>
+      <when value="TRUE">
+        <param name="vip_col" label="Column of values " type="data_column" data_ref="variableMetadata_in" accept_default="true" />
+        <param name="vip_value" type="float" label="VIP threshold "  optional="true" value="1" min="0" help="Should be positive ; Variables having a VIP lower than this limit will be removed"/>
+      </when>
+    </conditional>
+  </inputs>
+  
+  <outputs>
+    <data name="dataMatrix_out" label="${tool.name}_${dataMatrix_in.name}" format="tabular" ></data>
+    <data name="sampleMetadata_out" label="${tool.name}_${sampleMetadata_in.name}" format="tabular" ></data>
+    <data name="variableMetadata_out" label="${tool.name}_${variableMetadata_in.name}" format="tabular" ></data>
+  </outputs>
+  
+  <help>
+
+.. class:: infomark
+
+**Authors** Marion Landi and Melanie Petera
+
+---------------------------------------------------
+
+==============
+Filters
+==============
+
+-----------
+Description
+-----------
+
+
+	</help>
+</tool>
