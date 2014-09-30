@@ -35,11 +35,11 @@ if(length(args) < 9){ stop("NOT enough arguments !!!") }
 args$Compa <- as.logical(args$Compa)
 
 
-filter(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata_in,
+QualityControl(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata_in,
        args$CV, args$Compa, args$seuil,
        args$dataMatrix_out, args$sampleMetadata_out, args$variableMetadata_out)
 
-#filter(ion.file.in, meta.samp.file.in, meta.ion.file.in,
+#QualityControl(ion.file.in, meta.samp.file.in, meta.ion.file.in,
 #       CV, Compa, seuil,
 #       ion.file.out, meta.samp.file.out, meta.ion.file.out)
 

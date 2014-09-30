@@ -27,7 +27,7 @@ if(FALSE){
 
 }
 
-filter <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
+QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
                    CV, Compa, seuil,
                    ion.file.out, meta.samp.file.out, meta.ion.file.out){
   # This function allows to analyse data to check its quality 
@@ -44,9 +44,9 @@ filter <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
   
 # Input --------------------------------------------
 
-ion.data <- read.table(ion.file.in,sep=sep1,header=TRUE)
-meta.samp.data <- read.table(meta.samp.file.in,sep=sep2,header=TRUE)
-meta.ion.data <- read.table(meta.ion.file.in,sep=sep3,header=TRUE)
+ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
+meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE)
+meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE)
 
 # Error vector
 err.stock <- "\n"
@@ -115,18 +115,18 @@ if(length(err.stock)>1){
   stop(err.stock)
 }else{
 
-write.table(ion.data, ion.file.out, sep=sep1, row.names=FALSE, quote=FALSE)
-write.table(meta.samp.data, meta.samp.file.out, sep=sep2, row.names=FALSE, quote=FALSE)
-write.table(meta.ion.data, meta.ion.file.out, sep=sep3, row.names=FALSE, quote=FALSE)
+write.table(ion.data, ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+write.table(meta.samp.data, meta.samp.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
 
 }
 
 
-} # end of filter function
+} # end of QualityControl function
 
 
 # Typical function call
-#filter(ion.file.in, meta.samp.file.in, meta.ion.file.in,
+# QualityControl(ion.file.in, meta.samp.file.in, meta.ion.file.in,
 #       CV, Compa, seuil,
 #       ion.file.out, meta.samp.file.out, meta.ion.file.out)
 
