@@ -5,6 +5,7 @@
 # User: Galaxy                                                                                 #
 # Starting date: 04-09-2014                                                                    #
 # V-1.0: Restriction of old filter script to CV filter                                         #
+# V-1.1: Addition of data check                                                                #
 #                                                                                              #
 #                                                                                              #
 # Input files: dataMatrix ; sampleMetadata ; variableMetadata                                  #
@@ -19,9 +20,9 @@ if(FALSE){
   meta.samp.file.in <- "test/ressources/inputs/ex_data_PROTOCOLE1.txt"  #tab file
   meta.ion.file.in <- "test/ressources/inputs/ex_data_METAION.txt"  #tab file
   
-  ion.file.out <- "test/ressources/outputs/ex_data_IONS_fl.txt"  #tab file
-  meta.samp.file.out <- "test/ressources/outputs/ex_data_PROTOCOLE1_fl.txt"  #tab file
-  meta.ion.file.out <- "test/ressources/outputs/ex_data_METAION_fl.txt"  #tab file
+  ion.file.out <- "test/ressources/outputs/QCtest_ex_data_IONS.txt"  #tab file
+  meta.samp.file.out <- "test/ressources/outputs/QCtest_ex_data_PROTOCOLE1.txt"  #tab file
+  meta.ion.file.out <- "test/ressources/outputs/QCtest_ex_data_METAION.txt"  #tab file
   
   CV <- TRUE ; if(CV){Compa<-TRUE;seuil<-1.25}else{Compa<-NULL;seuil<-NULL}
 
@@ -43,6 +44,7 @@ QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
   
   
 # Input --------------------------------------------
+# Input -----------------------------------------------------------------------------------
 
 ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
 meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE)
@@ -51,9 +53,22 @@ meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE)
 # Error vector
 err.stock <- "\n"
 
+# Table match check -----------------------------------------------------------------------
 
-# Function 1: CV filter ---------------------------
-# Allows to filter ions according to the Coefficient of Variation (CV):
+if(length(which(ion.data[,1]%in%meta.ion.data[,1]))!=dim(ion.data)[1] ||
+     length(which(meta.ion.data[,1]%in%ion.data[,1]))!=dim(meta.ion.data)[1]){
+  stop("\nData matrix and variable metadata do not match regarding variable identifiers.\n",
+       "Please check your data.")
+}
+if(length(which(colnames(ion.data)[-1]%in%meta.samp.data[,1]))!=(dim(ion.data)[2]-1) ||
+     length(which(meta.samp.data[,1]%in%colnames(ion.data)[-1]))!=dim(meta.samp.data)[1]){
+  stop("\nData matrix and sample metadata do not match regarding sample identifiers.\n",
+       "Please check your data.\nNote: identifiers must not begin by a number.")
+}
+
+
+# Function 1: CV calculation --------------------------------------------------------------
+# Allows to class ions according to the Coefficient of Variation (CV):
 # Compa=TRUE:
 # 	CV of pools and CV of samples are compared ; if the ration between pools' one
 # 	and samples' one is higher than a given ration, corresponding ion is deleted. 
@@ -108,7 +123,7 @@ if(CV){
 
 
 
-# Output -------------------------------------------
+# Output ----------------------------------------------------------------------------------
 
 # Error checking
 if(length(err.stock)>1){
