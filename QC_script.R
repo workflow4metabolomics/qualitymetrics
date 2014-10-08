@@ -6,6 +6,7 @@
 # Starting date: 04-09-2014                                                                    #
 # V-1.0: Restriction of old filter script to CV filter                                         #
 # V-1.1: Addition of data check                                                                #
+# V-1.2: Substitution of deletion by addition of indicator variable                            #
 #                                                                                              #
 #                                                                                              #
 # Input files: dataMatrix ; sampleMetadata ; variableMetadata                                  #
@@ -38,12 +39,11 @@ QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
   # Parameters:
   # - xxx.in: input files' names
   # - xxx.out: output files' names
-  # - CV: CV filter yes/no
-  # | > Compa: filter comparing pool and sample CVs (TRUE) or according to pool CV (FALSE)
+  # - CV: CV calculation yes/no
+  # | > Compa: comparing pool and sample CVs (TRUE) or simple pool CV calculation (FALSE)
   # | > seuil: maximum ratio tolerated between pool and sample CVs or maximum pool CV
   
   
-# Input --------------------------------------------
 # Input -----------------------------------------------------------------------------------
 
 ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
@@ -70,28 +70,27 @@ if(length(which(colnames(ion.data)[-1]%in%meta.samp.data[,1]))!=(dim(ion.data)[2
 # Function 1: CV calculation --------------------------------------------------------------
 # Allows to class ions according to the Coefficient of Variation (CV):
 # Compa=TRUE:
-# 	CV of pools and CV of samples are compared ; if the ration between pools' one
-# 	and samples' one is higher than a given ration, corresponding ion is deleted. 
+# 	CV of pools and CV of samples are compared (ration between pools' one and samples' one)
+# 	and confronted to a given ration. 
 # Compa=FALSE:
-# 	only CV of pools are considered ; when the CV is higher than a given threshold,
-# 	corresponding ion is deleted. 
+# 	only CV of pools are considered ; compared to a given threshold
 if(CV){
   
   # Checking the sampleType variable
   if(is.null(meta.samp.data$sampleType)){
     err.stock <- c(err.stock,"\n-------",
                    "\nWarning : no 'sampleType' variable detected in sample meta-data !",
-                   "\nCV will not be tested.\n-------\n")
+                   "\nCV can not be calculated.\n-------\n")
   }else{
     if(!("pool"%in%levels(factor(meta.samp.data$sampleType)))){
       err.stock <- c(err.stock,"\n-------",
                      "\nWarning : no 'pool' detected in 'sampleType' variable (sample meta-data) !",
-                     "\nCV will not be tested.\n-------\n")
+                     "\nCV can not be calculated.\n-------\n")
     }else{
       if((!("sample"%in%levels(factor(meta.samp.data$sampleType))))&(Compa)){
         err.stock <- c(err.stock,"\n-------",
                        "\nWarning : no 'sample' detected in 'sampleType' variable (sample meta-data) !",
-                       "\nCV will not be tested.\n-------\n")
+                       "\nCV can not be calculated.\n-------\n")
       }else{
   
   # Statement
@@ -100,18 +99,19 @@ if(CV){
   # CV samples
   tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="sample"),1])
   tmp.ion$CV.samp <- apply(tmp.ion[,tmp.samp],1,sd) / rowMeans(tmp.ion[,tmp.samp])
+  tmp.ion$CV.samp[which(apply(tmp.ion[,tmp.samp],1,sd)==0)] <- 0
   # CV pools
   tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="pool"),1])
   tmp.ion$CV.pool <- apply(tmp.ion[,tmp.samp],1,sd) / rowMeans(tmp.ion[,tmp.samp])
+  tmp.ion$CV.pool[which(apply(tmp.ion[,tmp.samp],1,sd)==0)] <- 0
   # CV indicator
   if(Compa){tmp.ion$CV.ind <- ifelse((tmp.ion$CV.pool)/(tmp.ion$CV.samp)>seuil,0,1)
   }else{tmp.ion$CV.ind <- ifelse((tmp.ion$CV.pool)>seuil,0,1)}
-  # filter and storage ion.data
-  tmp.ion <- tmp.ion[which(tmp.ion$CV.ind==1),]
-  ion.data <- tmp.ion[,-c(1:3)]
-  rownames(ion.data) <- NULL
-  # filter and storage meta.ion.data
-  meta.ion.data <- meta.ion.data[which(meta.ion.data[,1]%in%ion.data[,1]),]
+  # Addition of new columns in meta.ion.data
+  if(Compa){tmp.ion<-tmp.ion[,c(4,2,3,1,1)]}else{tmp.ion<-tmp.ion[,c(4,3,1,1)]}
+  tmp.ion[,ncol(tmp.ion)] <- 1:nrow(tmp.ion)
+  meta.ion.data <- merge(x=meta.ion.data,y=tmp.ion,by.x=1,by.y=1)
+  meta.ion.data <- meta.ion.data[order(meta.ion.data[,ncol(meta.ion.data)]),][,-ncol(meta.ion.data)]
   rownames(meta.ion.data) <- NULL
   
   rm(tmp.ion,tmp.samp)
