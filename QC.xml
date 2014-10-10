@@ -21,21 +21,21 @@
   </command>
   
   <inputs>
-    <param name="dataMatrix_in" type="data" label="Data Matrix file " help="" format="tabular" />
-    <param name="sampleMetadata_in" type="data" label="Sample metadata file " help="" format="tabular" />
-    <param name="variableMetadata_in" type="data" label="Variable metadata file " help="" format="tabular" />
+    <param name="dataMatrix_in" type="data" label="Data matrix file" help="" format="tabular" />
+    <param name="sampleMetadata_in" type="data" label="Sample metadata file" help="" format="tabular" />
+    <param name="variableMetadata_in" type="data" label="Variable metadata file" help="" format="tabular" />
 	
     <conditional name="CV_condition">
-      <param name="CV" type="select" label="Coefficient of Variation " help="">
+      <param name="CV" type="select" label="Coefficient of Variation" help="">
         <option value="FALSE">no</option>
         <option value="TRUE">yes</option>
       </param>
       <when value="TRUE">
-        <param name="Compa" label="Which type of CV calculation should be done " type="select" display="radio" help="">
-          <option value="TRUE">comparison between pool and sample CVs</option>
-          <option value="FALSE">analyse according to pool CV</option>
+        <param name="Compa" label="Which type of CV calculation should be done" type="select" display="radio" help="">
+          <option value="TRUE">ratio between pool and sample CVs</option>
+          <option value="FALSE">only pool CV</option>
         </param>
-        <param name="seuil" type="float" label="Threshold " value="1.25" min="0.0000000000000001" help="if comparing pool and sample CVs, corresponds to the max ratio tolerated (basicly between 1.0 and 1.25) ; else corresponds to the max pool CV tolerated (basicly 0.3)"/>
+        <param name="seuil" type="float" label="Threshold" value="1.25" min="0.0000000000000001" help="if comparing pool and sample CVs, corresponds to the max ratio tolerated (basicly between 1.0 and 1.25) ; else corresponds to the max pool CV tolerated (basicly 0.3)"/>
       </when>
     </conditional>
   </inputs>
@@ -54,13 +54,111 @@
 
 ---------------------------------------------------
 
-==============
+========================
 Quality Control
-==============
+========================
 
 -----------
 Description
 -----------
+
+ | Analyses data to check its quality.
+ | *Coefficient of Variation*: allows to class variables according to the Coefficient of Variation (CV)
+
+ 
+ 
+-----------------
+Workflow position
+-----------------
+
+.. class:: warningmark
+
+This is the old picture !
+
+
+.. image:: ./static/images/metabolomics/filters.png
+        :width: 800
+
+
+
+-----------
+Input files
+-----------
+
++----------------------------+---------+
+| Parameter : num + label    |  Format |
++============================+=========+
+| 1 : Data matrix file       | tabular |
++----------------------------+---------+
+| 2 : Sample metadata file   | tabular |
++----------------------------+---------+
+| 3 : Variable metadata file | tabular |
++----------------------------+---------+
+
+
+Data matrix file must contain the intensity values of the variables.
+	| 
+
+Sample metadata file must have in particular the following columns under the conditions:
+	* for Coefficient of Variation => "sampleType": this column defines the type of sample, should contain 'sample' and 'pool'.
+	
+Variable metadata file contains variable information.
+	|
+
+
+----------
+Parameters
+----------
+
+Coefficient of Variation
+	| If 'yes' (not default): variables are classed according to the Coefficient of Variation (CV)
+	| i.e.: CV of pools (and CV of samples if needed) are calculated and compared to a defined threshold;
+	| then variables are classed with a 0/1 coding. 
+	| 
+
+Which type of CV calculation should be done (only if CV=yes)
+	| Type of CV comparison that will be used.
+	| 'ratio between pool and sample CVs' **OR** 'only pool CV'
+	|
+
+Threshold (only if CV=yes)
+	| If comparing pool and sample CVs, corresponds to the max ratio tolerated (basically between 1.0 and 1.25).
+	| Else corresponds to the max pool CV tolerated (basically 0.3).
+	|
+
+
+------------
+Output files
+------------
+
+
+dataMatrix.tabular
+	| tsv output
+	| Identical to the input Data matrix file.
+	|
+
+sampleMetadata.tabular
+	| tsv output
+	| Identical to the input Sample metadata file.
+	|
+
+variableMetadata.tabular
+	| tsv output
+	| Identical to the input Variable metadata file with addition of new columns depending on Quality control choices. 
+	|
+
+
+---------------------------------------------------
+
+---------------
+Working example
+---------------
+
+
+.. class:: warningmark
+
+Soon see the corresponding "Page"
+
 
 
 	</help>
