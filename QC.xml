@@ -71,12 +71,7 @@ Description
 Workflow position
 -----------------
 
-.. class:: warningmark
-
-This is the old picture !
-
-
-.. image:: ./static/images/metabolomics/filters.png
+.. image:: ./static/images/QualityControl.png
         :width: 800
 
 
@@ -100,7 +95,8 @@ Data matrix file must contain the intensity values of the variables.
 	| 
 
 Sample metadata file must have in particular the following columns under the conditions:
-	* for Coefficient of Variation => "sampleType": this column defines the type of sample, should contain 'sample' and 'pool'.
+	| for Coefficient of Variation => "sampleType": this column defines the type of sample, should contain 'sample' and 'pool'.
+	| 
 	
 Variable metadata file contains variable information.
 	|
