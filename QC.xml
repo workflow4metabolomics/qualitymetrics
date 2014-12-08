@@ -1,4 +1,4 @@
-<tool id="quality_control" name="Quality Control" version="stat_2014.09.04">
+<tool id="quality_control" name="Quality Control" version="2014.12.11">
   <description>Analyses data to check its quality according to: CV</description>
   <command interpreter="Rscript">
 	QC_wrap.R
