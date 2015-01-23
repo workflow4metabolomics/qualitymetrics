@@ -27,6 +27,7 @@ source_local <- function(fname){
 #Import the different functions
 source_local("QC_script.R")
 #source("/usr/local/share/R/QC_script.R")
+source_local("RcheckLibrary.R")
 
 
 if(length(args) < 9){ stop("NOT enough arguments !!!") }
