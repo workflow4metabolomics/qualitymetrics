@@ -16,128 +16,128 @@
 
 # Parameters (for dev)
 if(FALSE){
-  
-  ion.file.in <- "test/ressources/inputs/ex_data_IONS.txt"  #tab file
-  meta.samp.file.in <- "test/ressources/inputs/ex_data_PROTOCOLE1.txt"  #tab file
-  meta.ion.file.in <- "test/ressources/inputs/ex_data_METAION.txt"  #tab file
-  
-  ion.file.out <- "test/ressources/outputs/QCtest_ex_data_IONS.txt"  #tab file
-  meta.samp.file.out <- "test/ressources/outputs/QCtest_ex_data_PROTOCOLE1.txt"  #tab file
-  meta.ion.file.out <- "test/ressources/outputs/QCtest_ex_data_METAION.txt"  #tab file
-  
-  CV <- TRUE ; if(CV){Compa<-TRUE;seuil<-1.25}else{Compa<-NULL;seuil<-NULL}
+
+    ion.file.in <- "test/ressources/inputs/ex_data_IONS.txt" #tab file
+    meta.samp.file.in <- "test/ressources/inputs/ex_data_PROTOCOLE1.txt" #tab file
+    meta.ion.file.in <- "test/ressources/inputs/ex_data_METAION.txt" #tab file
+
+    ion.file.out <- "test/ressources/outputs/QCtest_ex_data_IONS.txt" #tab file
+    meta.samp.file.out <- "test/ressources/outputs/QCtest_ex_data_PROTOCOLE1.txt" #tab file
+    meta.ion.file.out <- "test/ressources/outputs/QCtest_ex_data_METAION.txt" #tab file
+
+    CV <- TRUE ; if(CV){Compa<-TRUE;seuil<-1.25}else{Compa<-NULL;seuil<-NULL}
 
 }
 
 QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
                    CV, Compa, seuil,
                    ion.file.out, meta.samp.file.out, meta.ion.file.out){
-  # This function allows to analyse data to check its quality 
-  # It needs 3 datasets: the data matrix, the variables' metadata, the samples' metadata. 
-  # It generates 3 new datasets corresponding to the 3 inputs with additional columns. 
-  #
-  # Parameters:
-  # - xxx.in: input files' names
-  # - xxx.out: output files' names
-  # - CV: CV calculation yes/no
-  # | > Compa: comparing pool and sample CVs (TRUE) or simple pool CV calculation (FALSE)
-  # | > seuil: maximum ratio tolerated between pool and sample CVs or maximum pool CV
-  
-  
-# Input -----------------------------------------------------------------------------------
-
-ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
-meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE)
-meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE)
-
-# Error vector
-err.stock <- "\n"
-
-# Table match check -----------------------------------------------------------------------
-
-if(length(which(ion.data[,1]%in%meta.ion.data[,1]))!=dim(ion.data)[1] ||
-     length(which(meta.ion.data[,1]%in%ion.data[,1]))!=dim(meta.ion.data)[1]){
-  stop("\nData matrix and variable metadata do not match regarding variable identifiers.\n",
-       "Please check your data.")
-}
-if(length(which(colnames(ion.data)[-1]%in%meta.samp.data[,1]))!=(dim(ion.data)[2]-1) ||
-     length(which(meta.samp.data[,1]%in%colnames(ion.data)[-1]))!=dim(meta.samp.data)[1]){
-  stop("\nData matrix and sample metadata do not match regarding sample identifiers.\n",
-       "Please check your data.\nNote: identifiers must not begin by a number.")
-}
+                                        # This function allows to analyse data to check its quality
+                                        # It needs 3 datasets: the data matrix, the variables' metadata, the samples' metadata.
+                                        # It generates 3 new datasets corresponding to the 3 inputs with additional columns.
+                                        #
+                                        # Parameters:
+                                        # - xxx.in: input files' names
+                                        # - xxx.out: output files' names
+                                        # - CV: CV calculation yes/no
+                                        # | > Compa: comparing pool and sample CVs (TRUE) or simple pool CV calculation (FALSE)
+                                        # | > seuil: maximum ratio tolerated between pool and sample CVs or maximum pool CV
 
 
-# Function 1: CV calculation --------------------------------------------------------------
-# Allows to class ions according to the Coefficient of Variation (CV):
-# Compa=TRUE:
-# 	CV of pools and CV of samples are compared (ration between pools' one and samples' one)
-# 	and confronted to a given ration. 
-# Compa=FALSE:
-# 	only CV of pools are considered ; compared to a given threshold
-if(CV){
-  
-  # Checking the sampleType variable
-  if(is.null(meta.samp.data$sampleType)){
-    err.stock <- c(err.stock,"\n-------",
-                   "\nWarning : no 'sampleType' variable detected in sample meta-data !",
-                   "\nCV can not be calculated.\n-------\n")
-  }else{
-    if(!("pool"%in%levels(factor(meta.samp.data$sampleType)))){
-      err.stock <- c(err.stock,"\n-------",
-                     "\nWarning : no 'pool' detected in 'sampleType' variable (sample meta-data) !",
-                     "\nCV can not be calculated.\n-------\n")
+                                        # Input -----------------------------------------------------------------------------------
+
+    ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
+    meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE)
+    meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE)
+
+                                        # Error vector
+    err.stock <- "\n"
+
+                                        # Table match check -----------------------------------------------------------------------
+
+    if(length(which(ion.data[,1]%in%meta.ion.data[,1]))!=dim(ion.data)[1] ||
+       length(which(meta.ion.data[,1]%in%ion.data[,1]))!=dim(meta.ion.data)[1]){
+        stop("\nData matrix and variable metadata do not match regarding variable identifiers.\n",
+             "Please check your data.")
+    }
+    if(length(which(colnames(ion.data)[-1]%in%meta.samp.data[,1]))!=(dim(ion.data)[2]-1) ||
+       length(which(meta.samp.data[,1]%in%colnames(ion.data)[-1]))!=dim(meta.samp.data)[1]){
+        stop("\nData matrix and sample metadata do not match regarding sample identifiers.\n",
+             "Please check your data.\nNote: identifiers must not begin by a number.")
+    }
+
+
+                                        # Function 1: CV calculation --------------------------------------------------------------
+                                        # Allows to class ions according to the Coefficient of Variation (CV):
+                                        # Compa=TRUE:
+                                        # 	CV of pools and CV of samples are compared (ration between pools' one and samples' one)
+                                        # 	and confronted to a given ration.
+                                        # Compa=FALSE:
+                                        # 	only CV of pools are considered ; compared to a given threshold
+    if(CV){
+
+                                        # Checking the sampleType variable
+        if(is.null(meta.samp.data$sampleType)){
+            err.stock <- c(err.stock,"\n-------",
+                           "\nWarning : no 'sampleType' variable detected in sample meta-data !",
+                           "\nCV can not be calculated.\n-------\n")
+        }else{
+            if(!("pool"%in%levels(factor(meta.samp.data$sampleType)))){
+                err.stock <- c(err.stock,"\n-------",
+                               "\nWarning : no 'pool' detected in 'sampleType' variable (sample meta-data) !",
+                               "\nCV can not be calculated.\n-------\n")
+            }else{
+                if((!("sample"%in%levels(factor(meta.samp.data$sampleType))))&(Compa)){
+                    err.stock <- c(err.stock,"\n-------",
+                                   "\nWarning : no 'sample' detected in 'sampleType' variable (sample meta-data) !",
+                                   "\nCV can not be calculated.\n-------\n")
+                }else{
+
+                                        # Statement
+                    tmp.ion <- data.frame(CV.ind=rep(NA,nrow(ion.data)),CV.samp=rep(NA,nrow(ion.data)),
+                                          CV.pool=rep(NA,nrow(ion.data)),ion.data,stringsAsFactors=FALSE)
+                                        # CV samples
+                    tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="sample"),1])
+                    tmp.ion$CV.samp <- apply(tmp.ion[,tmp.samp],1,sd) / rowMeans(tmp.ion[,tmp.samp])
+                    tmp.ion$CV.samp[which(apply(tmp.ion[,tmp.samp],1,sd)==0)] <- 0
+                                        # CV pools
+                    tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="pool"),1])
+                    tmp.ion$CV.pool <- apply(tmp.ion[,tmp.samp],1,sd) / rowMeans(tmp.ion[,tmp.samp])
+                    tmp.ion$CV.pool[which(apply(tmp.ion[,tmp.samp],1,sd)==0)] <- 0
+                                        # CV indicator
+                    if(Compa){tmp.ion$CV.ind <- ifelse((tmp.ion$CV.pool)/(tmp.ion$CV.samp)>seuil,0,1)
+                          }else{tmp.ion$CV.ind <- ifelse((tmp.ion$CV.pool)>seuil,0,1)}
+                                        # Addition of new columns in meta.ion.data
+                    if(Compa){tmp.ion<-tmp.ion[,c(4,2,3,1,1)]}else{tmp.ion<-tmp.ion[,c(4,3,1,1)]}
+                    tmp.ion[,ncol(tmp.ion)] <- 1:nrow(tmp.ion)
+                    meta.ion.data <- merge(x=meta.ion.data,y=tmp.ion,by.x=1,by.y=1)
+                    meta.ion.data <- meta.ion.data[order(meta.ion.data[,ncol(meta.ion.data)]),][,-ncol(meta.ion.data)]
+                    rownames(meta.ion.data) <- NULL
+
+                    rm(tmp.ion,tmp.samp)
+
+                }}}
+
+    }                                   # end if(CV)
+
+
+
+
+                                        # Output ----------------------------------------------------------------------------------
+
+                                        # Error checking
+    if(length(err.stock)>1){
+        stop(err.stock)
     }else{
-      if((!("sample"%in%levels(factor(meta.samp.data$sampleType))))&(Compa)){
-        err.stock <- c(err.stock,"\n-------",
-                       "\nWarning : no 'sample' detected in 'sampleType' variable (sample meta-data) !",
-                       "\nCV can not be calculated.\n-------\n")
-      }else{
-  
-  # Statement
-  tmp.ion <- data.frame(CV.ind=rep(NA,nrow(ion.data)),CV.samp=rep(NA,nrow(ion.data)),
-                        CV.pool=rep(NA,nrow(ion.data)),ion.data,stringsAsFactors=FALSE)
-  # CV samples
-  tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="sample"),1])
-  tmp.ion$CV.samp <- apply(tmp.ion[,tmp.samp],1,sd) / rowMeans(tmp.ion[,tmp.samp])
-  tmp.ion$CV.samp[which(apply(tmp.ion[,tmp.samp],1,sd)==0)] <- 0
-  # CV pools
-  tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="pool"),1])
-  tmp.ion$CV.pool <- apply(tmp.ion[,tmp.samp],1,sd) / rowMeans(tmp.ion[,tmp.samp])
-  tmp.ion$CV.pool[which(apply(tmp.ion[,tmp.samp],1,sd)==0)] <- 0
-  # CV indicator
-  if(Compa){tmp.ion$CV.ind <- ifelse((tmp.ion$CV.pool)/(tmp.ion$CV.samp)>seuil,0,1)
-  }else{tmp.ion$CV.ind <- ifelse((tmp.ion$CV.pool)>seuil,0,1)}
-  # Addition of new columns in meta.ion.data
-  if(Compa){tmp.ion<-tmp.ion[,c(4,2,3,1,1)]}else{tmp.ion<-tmp.ion[,c(4,3,1,1)]}
-  tmp.ion[,ncol(tmp.ion)] <- 1:nrow(tmp.ion)
-  meta.ion.data <- merge(x=meta.ion.data,y=tmp.ion,by.x=1,by.y=1)
-  meta.ion.data <- meta.ion.data[order(meta.ion.data[,ncol(meta.ion.data)]),][,-ncol(meta.ion.data)]
-  rownames(meta.ion.data) <- NULL
-  
-  rm(tmp.ion,tmp.samp)
-  
-      }}}
-  
-} # end if(CV)
+
+        write.table(ion.data, ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+        write.table(meta.samp.data, meta.samp.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+        write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+
+    }
 
 
-
-
-# Output ----------------------------------------------------------------------------------
-
-# Error checking
-if(length(err.stock)>1){
-  stop(err.stock)
-}else{
-
-write.table(ion.data, ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
-write.table(meta.samp.data, meta.samp.file.out, sep="\t", row.names=FALSE, quote=FALSE)
-write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
-
-}
-
-
-} # end of QualityControl function
+}                                     # end of QualityControl function
 
 
 # Typical function call
@@ -145,3 +145,735 @@ write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=F
 #       CV, Compa, seuil,
 #       ion.file.out, meta.samp.file.out, meta.ion.file.out)
 
+
+
+# Output ----------------------------------------------------------------------------------
+
+# Error checking
+if(length(err.stock)>1){
+    stop(err.stock)
+}else{
+
+    write.table(ion.data, ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+    write.table(meta.samp.data, meta.samp.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+    write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=FALSE)
+
+}
+
+
+
+
+# Typical function call
+# QualityControl(ion.file.in, meta.samp.file.in, meta.ion.file.in,
+#       CV, Compa, seuil,
+#       ion.file.out, meta.samp.file.out, meta.ion.file.out)
+
+
+
+
+## Etienne Thevenot
+## 2015-01-21
+
+qualityControlF <- function(datMN,
+                            samDF,
+                            varDF,
+                            fig.pdfC = NULL,
+                            log.txtC = NULL) {
+
+
+    ##------------------------------
+    ## Functions
+    ##------------------------------
+
+    flgF <- function(tesC,
+                     typC = c("stp", "wrn"),
+                     funC = NA,
+                     envC = topEnvC,
+                     txtC = NA) {
+
+        tmpFlgVc <- c(typ = switch(typC,
+                          stp = "",
+                          wrn = "Warning"),
+                      fun = ifelse(!is.na(funC), funC, ""),
+                      tes = tesC,
+                      res = as.character(eval(parse(text = tesC), envir = envC)),
+                      txt = ifelse(!is.na(txtC), txtC, ""))
+
+        tmpFlgC <- paste(tmpFlgVc[tmpFlgVc != ""], collapse = ": ")
+
+        if(typC == "stp" && !as.logical(tmpFlgVc["res"])) {
+
+            if(!is.null(log.txtC))
+                sink(NULL)
+
+            stop(tmpFlgC,
+                 call. = FALSE)
+
+        } else if(typC == "wrn"){
+
+            flgC <- paste(flgC,
+                          tmpFlgC,
+                          "\n",
+                          sep = "")
+
+            assign("flgC", flgC, envir = topEnvC)
+
+        }
+
+    } ## flgF
+
+    allDigF <- function (string) { ## from the Hmisc package (all.digits)
+        k <- length(string)
+        result <- logical(k)
+        for (i in 1:k) {
+            st <- string[i]
+            ls <- nchar(st)
+            ex <- substring(st, 1:ls, 1:ls)
+            result[i] <- all(match(ex, c("0", "1", "2", "3", "4",
+                                         "5", "6", "7", "8", "9"), nomatch = 0) > 0)
+        }
+        result
+    }
+
+    datPloF <- function() { ## ploting data matrix
+
+        thrVn <- c(pvalue=0.001,
+                   poolCv=0.3)
+
+        ## Constants
+
+        marLs <- list(dri = c(2.1, 2.6, 1.1, 1.1),
+                      ima = c(1.1, 2.6, 4.1, 1.1),
+                      msd = c(2.1, 2.6, 1.1, 0.6),
+                      sam = c(3.1, 3.6, 1.1, 0.6),
+                      pca = c(2.6, 3.6, 1.1, 0.6),
+                      sca = c(1.1, 4.1, 4.1, 0.6),
+                      tit = c(0.1, 0.6, 1.1, 0.6))
+        palHeaVc <- rev(rainbow(ceiling(256 * 1.5))[1:256])
+
+        ## Functions
+
+        axiPreF <- function(valVn,
+                            lenN) {
+
+            if(NA %in% valVn) {
+                warning("NA in valVn")
+                valVn <- as.vector(na.omit(valVn))
+            }
+
+            if(lenN < length(valVn))
+                stop("The length of in vector must be inferior to the length of the length parameter.")
+
+            if(length(valVn) < lenN)
+                valVn <- seq(from = min(valVn), to = max(valVn), length.out = lenN)
+
+            preValVn <- pretty(valVn)
+
+            preLabVn <- preAtVn <- c()
+
+            for(n in 1:length(preValVn))
+                if(min(valVn) < preValVn[n] && preValVn[n] < max(valVn)) {
+                    preLabVn <- c(preLabVn, preValVn[n])
+                    preAtVn <- c(preAtVn, which(abs(valVn - preValVn[n]) == min(abs(valVn - preValVn[n])))[1])
+                }
+
+            return(list(atVn = preAtVn,
+                        labVn = preLabVn))
+
+        }
+
+        colF <- function(vecVn)
+            sapply(vecVn,
+                   function(outN) {
+                       if(outN < ploRgeVn[1])
+                           return(palHeaVc[1])
+                       else if(outN > ploRgeVn[2])
+                           return(palHeaVc[256])
+                       else return(palHeaVc[round((outN - ploRgeVn[1]) / diff(ploRgeVn) * 256 + 1)])})
+
+        obsColF <- function(typVc) {
+
+            ## available color palette
+            palVc <- palette()
+
+            ## colors for common types are set aside
+            palVc <- palVc[!(palVc %in% c("black", "red", "green3"))]
+
+            ## filling in the types with dedicated colors
+            samTypVc <- sort(unique(samDF[, "sampleType"]))
+            samColVc <- character(length(samTypVc))
+            if("blank" %in% samTypVc)
+                samColVc[grepl("blank", samTypVc)] <- "black"
+            if("pool" %in% samTypVc)
+                samColVc[grepl("pool", samTypVc)] <- "red"
+            if("sample" %in% samTypVc)
+                samColVc[grepl("sample", samTypVc)] <- "green3"
+
+            ## filling in the other types
+            palColI <- 1
+            palColMaxI <- length(palVc)
+
+            while(any(samColVc == "")) {
+                typToColI <- which(samColVc == "")[1]
+                if(palColI <= palColMaxI)
+                    samColVc[typToColI] <- palVc[palColI]
+                else
+                    samColVc[typToColI] <- "gray"
+                palColI <- palColI + 1
+            }
+
+            names(samColVc) <- samTypVc
+
+            samColVc[typVc]
+
+        }
+
+        par(font = 2,
+            font.axis = 2,
+            font.lab = 2)
+
+        layout(matrix(c(1, 3, 4, 5, 5,
+                        1, 7, 7, 7, 6,
+                        2, 7, 7, 7, 6),
+                      byrow = TRUE,
+                      nrow = 3),
+               heights = c(1.8, 1.2, 2.5),
+               widths = c(3.5, 1.8, 2.8, 1, 0.8))
+
+        ## Colors
+        ##-------
+
+        if("sampleType" %in% colnames(samDF)) {
+            obsColVc <- obsColF(samDF[, "sampleType"])
+        } else
+            obsColVc <- rep("black", nrow(samDF))
+
+        ## PCA and Hotelling ellipse
+        ##--------------------------
+
+        vVn <- ropLs[["vVn"]]
+        vRelVn <- vVn / ncol(datMN)
+
+        par(mar = marLs[["pca"]])
+
+        plot(ropLs[["tMN"]],
+             type = "n",
+             xlab = "",
+             ylab = "",
+             xlim = range(ropLs[["tMN"]][, 1]) * 1.1)
+        mtext(paste("t1 (", round(vRelVn[1] * 100), "%)", sep = ""),
+              cex = 0.7,
+              line = 2,
+              side = 1)
+        mtext(paste("t2 (", round(vRelVn[2] * 100), "%)", sep = ""),
+              cex = 0.7,
+              las = 0,
+              line = 2,
+              side = 2)
+        abline(h = 0, lty = "dashed")
+        abline(v = 0, lty = "dashed")
+        radVn <- seq(0, 2 * pi, length.out = 100)
+
+        hotFisN <- hotN * qf(1 - thrVn["pvalue"], 2, n - 2)
+        lines(sqrt(var(ropLs[["tMN"]][, 1]) * hotFisN) * cos(radVn),
+              sqrt(var(ropLs[["tMN"]][, 2]) * hotFisN) * sin(radVn))
+
+        text(ropLs[["tMN"]][, 1],
+             ropLs[["tMN"]][, 2],
+             cex = 0.7,
+             col = obsColVc,
+             labels = rownames(datMN))
+
+        if("sampleType" %in% colnames(samDF))
+            ropColF(obsColF(sort(unique(samDF[, "sampleType"]))),
+                    "topleft",
+                    speLegL=TRUE)
+
+        ## Missing/low intensities and decile values
+        ##------------------------------------------
+
+        par(mar = marLs[["sam"]])
+
+        plot(missZscoVn,
+             deciZscoMaxVn,
+             type = "n",
+             xlab = "",
+             ylab = "",
+             xlim = c(min(missZscoVn),
+                 max(missZscoVn) + 0.5))
+        mtext("amount of missing values (z-score)",
+              cex = 0.7,
+              line = 2,
+              side = 1)
+        mtext("deciles (zscore)",
+              cex = 0.7,
+              las = 0,
+              line = 2,
+              side = 2)
+        abline(h = qnorm(1 - thrVn["pvalue"] / 2) * c(-1, 1), lty = "dashed")
+        abline(v = qnorm(1 - thrVn["pvalue"] / 2) * c(-1, 1), lty = "dashed")
+        text(missZscoVn,
+             deciZscoMaxVn,
+             cex = 0.7,
+             col = obsColVc,
+             labels = rownames(datMN))
+
+        ## tit: Title
+        ##-----------
+
+        par(mar = marLs[["tit"]])
+        plot(0:1, bty = "n", type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+        text(1.5, 1, cex = 1.3, labels = "Quality Control")
+        text(1, 0.85, adj=0, cex = 1.1, labels = paste0("NAs: ",
+                                            round(length(which(is.na(c(datMN)))) / cumprod(dim(datMN))[2] * 100), "%"))
+        text(1, 0.75, adj=0, cex = 1.1, labels = paste0("0 values: ",
+                                            round(sum(abs(datMN) < epsN, na.rm=TRUE) / cumprod(dim(datMN))[2] * 100, 2), "%"))
+        text(1, 0.65, adj=0, cex = 1.1, labels = paste0("min: ", signif(min(datMN, na.rm=TRUE), 2)))
+        text(1, 0.55, adj=0, cex = 1.1, labels = paste0("median: ", signif(median(datMN, na.rm=TRUE), 2)))
+        text(1, 0.45, adj=0, cex = 1.1, labels = paste0("mean: ", signif(mean(datMN, na.rm=TRUE), 2)))
+        text(1, 0.35, adj=0, cex = 1.1, labels = paste0("max: ", signif(max(datMN, na.rm=TRUE), 2)))
+        if("sampleType" %in% colnames(samDF) &&
+           "pool" %in% samDF[, "sampleType"])
+            text(1,
+                 0.25,
+                 adj=0, cex = 1.1,
+                 labels = paste0("pool CV < ",
+                     round(thrVn["poolCv"] * 100), "%: ",
+                     round(sum(varDF[, "pool_CV"] < thrVn["poolCv"]) / nrow(varDF) * 100),
+                     "%"))
+
+        text(1, 0.1, adj=0, labels = paste0("Thresholds used in plots:"))
+        text(1, 0, adj=0, labels = paste0("  p-value = ", thrVn["pvalue"]))
+
+        ## dri: Analytical drift
+        ##----------------------
+
+        par(mar = marLs[["dri"]])
+
+        ## ordering
+
+        driDatMN <- datMN
+        driSamDF <- samDF
+
+        driSamDF[, "ordIniVi"] <- 1:nrow(driDatMN)
+
+        if("injectionOrder" %in% colnames(driSamDF)) {
+            if("batch" %in% colnames(driSamDF))
+                ordVi <- order(driSamDF[, "batch"],
+                               driSamDF[, "injectionOrder"])
+            else
+                ordVi <- order(driSamDF[, "injectionOrder"])
+        } else
+            ordVi <- 1:nrow(driDatMN)
+
+        driDatMN <- driDatMN[ordVi, ]
+        driSamDF <- driSamDF[ordVi, ]
+
+        driColVc <- rep("black", nrow(driDatMN))
+        if("sampleType" %in% colnames(driSamDF))
+            driColVc <- obsColF(driSamDF[, "sampleType"])
+
+        plot(rowSums(driDatMN, na.rm=TRUE),
+             col = driColVc,
+             pch = 16,
+             xlab = "",
+             ylab = "")
+
+        mtext("injection order",
+              cex = 0.7,
+              line = 2,
+              side = 1)
+
+        mtext("Sum of intens. for all variables",
+              cex = 0.7,
+              line = 2,
+              side = 2)
+
+        ## msd: Sd vs Mean plot
+        ##---------------------
+
+        par(mar = marLs[["msd"]])
+        plot(apply(datMN, 2, function(y) mean(y, na.rm = TRUE)),
+             apply(datMN, 2, function(y) sd(y, na.rm = TRUE)),
+             col=obsColVc,
+             pch = 16,
+             xlab = "",
+             ylab = "")
+        mtext("mean",
+              cex = 0.7,
+              line = 2,
+              side = 1)
+        mtext("sd",
+              cex = 0.7,
+              line = 2,
+              side = 2)
+
+        ## sca-6: Color scale
+        ##-------------------
+
+        par(mar = marLs[["sca"]])
+
+        ylimVn <- c(0, 256)
+        ybottomVn <- 0:255
+        ytopVn <- 1:256
+
+        plot(x = 0,
+             y = 0,
+             font.axis = 2,
+             font.lab = 2,
+             type = "n",
+             xlim = c(0, 1),
+             ylim = ylimVn,
+             xlab = "",
+             ylab = "",
+             xaxs = "i",
+             yaxs = "i",
+             xaxt = "n",
+             yaxt = "n")
+
+        rect(xleft = 0,
+             ybottom = ybottomVn,
+             xright = 1,
+             ytop = ytopVn,
+             col = palHeaVc,
+             border = NA)
+
+        eval(parse(text = paste("axis(at = axiPreF(c(ifelse(min(datMN, na.rm = TRUE) == -Inf, yes = 0, no = min(datMN, na.rm = TRUE)) , max(datMN, na.rm = TRUE)), 256)$atVn,
+             font = 2,
+             font.axis = 2,
+             labels = axiPreF(c(ifelse(min(datMN, na.rm = TRUE) == -Inf, yes = 0, no = min(datMN, na.rm = TRUE)), max(datMN, na.rm = TRUE)), 256)$labVn,
+             las = 1,
+             lwd = 2,
+             lwd.ticks = 2,
+             side = 2,
+             xpd = TRUE)", sep = "")))
+
+        arrows(par("usr")[1],
+               par("usr")[4],
+               par("usr")[1],
+               par("usr")[3],
+               code = 0,
+               lwd = 2,
+               xpd = TRUE)
+
+        ## ima: Image
+        ##-----------
+
+        par(mar = marLs[["ima"]])
+
+        ploRgeVn <- range(datMN, na.rm = TRUE)
+
+        imaMN <- t(datMN)[, rev(1:nrow(datMN)), drop = FALSE]
+
+        image(x = 1:nrow(imaMN),
+              y = 1:ncol(imaMN),
+              z = imaMN,
+              col = palHeaVc,
+              font.axis = 2,
+              font.lab = 2,
+              xaxt = "n",
+              yaxt = "n",
+              xlab = "",
+              ylab = "")
+
+        if(length(rownames(datMN)) == 0) {
+            rowNamVc <- rep("", times = nrow(datMN))
+        } else
+            rowNamVc <- rownames(datMN)
+
+        if(length(colnames(datMN)) == 0) {
+            colNamVc <- rep("", times = ncol(datMN))
+        } else
+            colNamVc <- colnames(datMN)
+
+        xlaVc <- paste(paste(rep("[", 2),
+                             c(1, nrow(imaMN)),
+                             rep("] ", 2),
+                             sep = ""),
+                       rep("\n", times = 2),
+                       c(colNamVc[1], tail(colNamVc, 1)),
+                       sep = "")
+
+        for(k in 1:2)
+            axis(side = 3,
+                 hadj = c(0, 1)[k],
+                 at = c(1, nrow(imaMN))[k],
+                 cex = 0.8,
+                 font = 2,
+                 labels = xlaVc[k],
+                 line = -0.5,
+                 tick = FALSE)
+
+
+        ylaVc <- paste(paste(rep("[", times = 2),
+                             c(ncol(imaMN), 1),
+                             rep("]", times = 2),
+                             sep = ""),
+                       rep("\n", times = 2),
+                       c(tail(rowNamVc, 1), rowNamVc[1]),
+                       sep = "")
+
+        for(k in 1:2)
+            axis(side = 2,
+                 at = c(1, ncol(imaMN))[k],
+                 cex = 0.8,
+                 font = 2,
+                 hadj = c(0, 1)[k],
+                 labels = ylaVc[k],
+                 las = 0,
+                 line = -0.5,
+                 lty = "blank",
+                 tick = FALSE)
+
+        box(lwd = 2)
+
+
+    }
+
+
+    zScoreF <- function(x) {
+        sdxN <- sd(x, na.rm = TRUE)
+        if(sdxN < epsN)
+            return(rep(0, length(x)))
+        else
+            return((x - mean(x, na.rm = TRUE)) / sdxN)
+    }
+
+
+    ## Option
+    ##-------
+
+    strAsFacL <- options()$stringsAsFactors
+    options(stingsAsFactors = FALSE)
+    options(warn = -1)
+
+    ## Constants
+    ##----------
+
+    epsN <- .Machine[["double.eps"]] ## [1] 2.22e-16
+    topEnvC <- environment()
+    flgC <- "\n"
+
+    ## Log file (in case of integration into Galaxy)
+    ##----------------------------------------------
+
+    if(!is.null(log.txtC))
+        sink(log.txtC, append = TRUE)
+
+
+    ##------------------------------
+    ## Start
+    ##------------------------------
+
+    ## Initial message
+
+    cat("\nStarting the 'Quality Control' module: ",
+        format(Sys.time(), "%a %d %b %Y %X"), "\n", sep="")
+
+
+    ## Description
+    ##------------
+
+    cat("\n\nData description:\n\n", sep = "")
+    cat("observations:", nrow(datMN), "\n")
+    cat("variables:", ncol(datMN), "\n")
+    cat("missing:", sum(is.na(datMN)), "\n")
+    cat("0 values (%):",
+        sum(abs(datMN) < epsN, na.rm=TRUE) / cumprod(dim(datMN))[2] * 100, "\n")
+    cat("min:", min(datMN, na.rm=TRUE), "\n")
+    cat("mean:", signif(mean(datMN, na.rm=TRUE), 2), "\n")
+    cat("median:", signif(median(datMN, na.rm=TRUE), 2), "\n")
+    cat("max:", signif(max(datMN, na.rm=TRUE), 2), "\n")
+
+    if("sampleType" %in% colnames(samDF)) {
+        cat("\nSample types:\n", sep = "")
+        print(table(samDF[, "sampleType"]))
+        cat("\n", sep="")
+    }
+
+
+    ##------------------------------
+    ## Variable control
+    ##------------------------------
+
+
+    ## 'blank' observations
+
+    if("sampleType" %in% colnames(samDF) && "blank" %in% samDF[, "sampleType"]) {
+
+        cat("\nVariables: Blank mean, var, and CV\n", sep="")
+
+        blkVl <- samDF[, "sampleType"] == "blank"
+
+        varDF[, "blank_mean"] <- apply(datMN[blkVl, , drop=FALSE], 2, function(varVn) mean(varVn, na.rm=TRUE))
+
+        varDF[, "blank_var"] <- apply(datMN[blkVl, , drop=FALSE], 2, function(varVn) var(varVn, na.rm=TRUE))
+
+        varDF[, "blank_CV"] <- apply(datMN[blkVl, , drop=FALSE], 2, function(varVn)
+                                     sd(varVn, na.rm=TRUE) / var(varVn, na.rm=TRUE))
+
+    }
+
+    ## 'sample' observations
+
+    if("sampleType" %in% colnames(samDF) && "sample" %in% samDF[, "sampleType"]) {
+
+        cat("\nVariables: Sample mean, var, and CV\n", sep="")
+
+        samVl <- samDF[, "sampleType"] == "sample"
+
+        varDF[, "sample_mean"] <- apply(datMN[samVl, , drop=FALSE], 2, function(varVn) mean(varVn, na.rm=TRUE))
+
+        varDF[, "sample_var"] <- apply(datMN[samVl, , drop=FALSE], 2, function(varVn) var(varVn, na.rm=TRUE))
+
+        varDF[, "sample_CV"] <- apply(datMN[samVl, , drop=FALSE], 2, function(varVn)
+                                      sd(varVn, na.rm=TRUE) / var(varVn, na.rm=TRUE))
+
+    }
+
+    ## 'blank'/'sample' ratio
+
+    if("sampleType" %in% colnames(samDF) && all(c("blank", "sample") %in% samDF[, "sampleType"])) {
+
+        cat("\nVariables: Blank mean over sample mean\n", sep="")
+
+        varDF[, "blankMean_over_sampleMean"] <- varDF[, "blank_mean"] / varDF[, "sample_mean"]
+
+    }
+
+    ## 'pool' observations
+
+    if("sampleType" %in% colnames(samDF) && "pool" %in% samDF[, "sampleType"]) {
+
+        cat("\nVariables: Pool mean, var, and CV\n", sep="")
+
+        pooVl <- samDF[, "sampleType"] == "pool"
+
+        varDF[, "pool_mean"] <- apply(datMN[pooVl, , drop=FALSE], 2, function(varVn) mean(varVn, na.rm=TRUE))
+
+        varDF[, "pool_var"] <- apply(datMN[pooVl, , drop=FALSE], 2, function(varVn) var(varVn, na.rm=TRUE))
+
+        varDF[, "pool_CV"] <- apply(datMN[pooVl, , drop=FALSE], 2, function(varVn)
+                                    sd(varVn, na.rm=TRUE) / var(varVn, na.rm=TRUE))
+
+    }
+
+    ## 'pool' dilutions
+
+    if("sampleType" %in% colnames(samDF) && any(grepl("pool.+", samDF[, "sampleType"]))) {
+
+        pooVi <- grep("pool.*", samDF[, "sampleType"]) ## pool, pool2, pool4, poolInter, ...
+
+        pooNamVc <- samDF[pooVi, "sampleType"]
+        pooNamVc[pooNamVc == "pool"] <- "pool1" ## 'pool' -> 'pool1'
+
+        pooDilVc <- gsub("pool", "", pooNamVc)
+
+        pooDilVl <- sapply(pooDilVc, allDigF)
+
+        if(sum(pooDilVl)) {
+
+            cat("\nVariables: Pool dilutions\n", sep="")
+
+            pooNamVc <- pooNamVc[pooDilVl] ## for the plot
+
+            pooVi <- pooVi[pooDilVl]
+
+            dilVn <- as.numeric(pooDilVc[pooDilVl])
+
+            varDF[, "poolDil_correl"] <- apply(datMN[pooVi, , drop=FALSE], 2,
+                                               function(varVn) cor(dilVn, varVn))
+
+            varDF[, "poolDil_pval"] <- apply(datMN[pooVi, , drop=FALSE], 2,
+                                             function(varVn) cor.test(dilVn, varVn)[["p.value"]])
+
+        }
+
+    }
+
+
+    ##------------------------------
+    ## Sample control
+    ##------------------------------
+
+
+    ## Hotelling: p-value associated to the distance from the center in the first PCA score plane
+
+    cat("\nSamples: Hotelling ellipse\n", sep="")
+
+    ropLs <- ropF(datMN, ncpN=2, ploVc="none", vrbC="none")
+
+    invCovScoMN <- solve(cov(ropLs[["tMN"]]))
+
+    n <- nrow(datMN)
+    hotN <- 2 * (n - 1) * (n^2 - 1) / (n^2 * (n - 2))
+
+    hotPvaVn <- apply(ropLs[["tMN"]],
+                      1,
+                      function(x)
+                      1 - pf(1 / hotN * t(as.matrix(x)) %*% invCovScoMN %*% as.matrix(x), 2, n - 2))
+
+    samDF[, "hotelling_pval"] <- hotPvaVn
+
+    ## p-value associated to number of missing values
+
+    cat("\nSamples: Missing values\n", sep="")
+
+    missZscoVn <- zScoreF(apply(datMN,
+                                1,
+                                function(rowVn) {
+                                    sum(is.na(rowVn))
+                                }))
+
+    samDF[, "missing_pval"] <- sapply(missZscoVn, function(zscoN) 2 * (1 - pnorm(abs(zscoN))))
+
+    ## p-value associated to the deciles of the profiles
+
+    cat("\nSamples: Profile deciles\n", sep="")
+
+    deciMN <- t(as.matrix(apply(datMN,
+                                1,
+                                function(x) quantile(x, 0.1 * 1:9, na.rm = TRUE))))
+
+    deciZscoMN <- apply(deciMN, 2, zScoreF)
+
+    deciZscoMaxVn <- apply(deciZscoMN, 1, function(rowVn) rowVn[which.max(abs(rowVn))])
+
+    samDF[, "decile_pval"] <- sapply(deciZscoMaxVn, function(zscoN) 2 * (1 - pnorm(abs(zscoN))))
+
+
+    ##------------------------------
+    ## Figure
+    ##------------------------------
+
+    cat("\nPlotting\n")
+
+    if(!is.null(fig.pdfC)) {
+        pdf(fig.pdfC, width=11, height=7)
+    } else
+        dev.new(width=11, height=7)
+
+    datPloF()
+
+    if(!is.null(fig.pdfC))
+        dev.off()
+
+
+    ##------------------------------
+    ## End
+    ##------------------------------
+
+
+    ## Final message
+
+    cat("\nEnding the 'Batch Correction' module:\n", format(Sys.time(), "%a %d %b %Y %X"), "\n")
+
+    if(!is.null(log.txtC))
+        sink(NULL)
+
+    options(stingsAsFactors = strAsFacL)
+
+    return(varDF)
+
+
+} ## qualityControlF
