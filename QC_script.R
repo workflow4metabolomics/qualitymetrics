@@ -7,6 +7,7 @@
 # V-1.0: Restriction of old filter script to CV filter                                         #
 # V-1.1: Addition of data check                                                                #
 # V-1.2: Substitution of deletion by addition of indicator variable                            #
+# V-1.3: Handling special characters                                                           #
 #                                                                                              #
 #                                                                                              #
 # Input files: dataMatrix ; sampleMetadata ; variableMetadata                                  #
@@ -46,9 +47,9 @@ QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
   
 # Input -----------------------------------------------------------------------------------
 
-ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
-meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE)
-meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE)
+ion.data <- read.table(ion.file.in,sep="\t",header=TRUE,check.names=FALSE)
+meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE,check.names=FALSE)
+meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE,check.names=FALSE)
 
 # Error vector
 err.stock <- "\n"
@@ -57,7 +58,11 @@ err.stock <- "\n"
 table.check <- match3(ion.data,meta.samp.data,meta.ion.data)
 check.err(table.check)
 
-
+# StockID
+samp.id <- stockID(ion.data,meta.samp.data,"sample")
+ion.data <- samp.id$dataMatrix
+meta.samp.data <- samp.id$Metadata
+samp.id <- samp.id$id.match
 
 
 # Function 1: CV calculation --------------------------------------------------------------
@@ -117,6 +122,12 @@ if(CV){
 
 
 # Output ----------------------------------------------------------------------------------
+
+# Getting back original identifiers
+id.ori <- reproduceID(ion.data,meta.samp.data,"sample",samp.id)
+ion.data <- id.ori$dataMatrix
+meta.samp.data <- id.ori$Metadata
+
 
 # Error checking
 if(length(err.stock)>1){
