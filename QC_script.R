@@ -7,6 +7,7 @@
 # V-1.0: Restriction of old filter script to CV filter                                         #
 # V-1.1: Addition of data check                                                                #
 # V-1.2: Substitution of deletion by addition of indicator variable                            #
+# V-1.3: Handling special characters                                                           #
 #                                                                                              #
 #                                                                                              #
 # Input files: dataMatrix ; sampleMetadata ; variableMetadata                                  #
@@ -46,25 +47,22 @@ QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
   
 # Input -----------------------------------------------------------------------------------
 
-ion.data <- read.table(ion.file.in,sep="\t",header=TRUE)
-meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE)
-meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE)
+ion.data <- read.table(ion.file.in,sep="\t",header=TRUE,check.names=FALSE)
+meta.samp.data <- read.table(meta.samp.file.in,sep="\t",header=TRUE,check.names=FALSE)
+meta.ion.data <- read.table(meta.ion.file.in,sep="\t",header=TRUE,check.names=FALSE)
 
 # Error vector
 err.stock <- "\n"
 
-# Table match check -----------------------------------------------------------------------
+# Table match check 
+table.check <- match3(ion.data,meta.samp.data,meta.ion.data)
+check.err(table.check)
 
-if(length(which(ion.data[,1]%in%meta.ion.data[,1]))!=dim(ion.data)[1] ||
-     length(which(meta.ion.data[,1]%in%ion.data[,1]))!=dim(meta.ion.data)[1]){
-  stop("\nData matrix and variable metadata do not match regarding variable identifiers.\n",
-       "Please check your data.")
-}
-if(length(which(colnames(ion.data)[-1]%in%meta.samp.data[,1]))!=(dim(ion.data)[2]-1) ||
-     length(which(meta.samp.data[,1]%in%colnames(ion.data)[-1]))!=dim(meta.samp.data)[1]){
-  stop("\nData matrix and sample metadata do not match regarding sample identifiers.\n",
-       "Please check your data.\nNote: identifiers must not begin by a number.")
-}
+# StockID
+samp.id <- stockID(ion.data,meta.samp.data,"sample")
+ion.data <- samp.id$dataMatrix
+meta.samp.data <- samp.id$Metadata
+samp.id <- samp.id$id.match
 
 
 # Function 1: CV calculation --------------------------------------------------------------
@@ -124,6 +122,12 @@ if(CV){
 
 
 # Output ----------------------------------------------------------------------------------
+
+# Getting back original identifiers
+id.ori <- reproduceID(ion.data,meta.samp.data,"sample",samp.id)
+ion.data <- id.ori$dataMatrix
+meta.samp.data <- id.ori$Metadata
+
 
 # Error checking
 if(length(err.stock)>1){
