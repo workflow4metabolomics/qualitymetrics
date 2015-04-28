@@ -1,6 +1,6 @@
 Tool: Quality Metrics
 
-I. Date: 2015-03-18
+I. Date: 2015-04-28
 
 II. Authors and maintainer:
 
@@ -40,7 +40,7 @@ VI. Installation
 	4) 'qualityMetrics_script.R'
 		R code containing the computational functions
 		
-	5) 'ropls_0.10.16.tar.gz'
+	5) 'ropls_0.10.20.tar.gz'
          Source code of the ropls package; to be installed with the 'install.packages' R command
 		 This package is for installation of the Galaxy module on the Workflow4metabolomics.org and must not be distributed without the author agreement
 		

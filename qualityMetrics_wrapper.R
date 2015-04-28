@@ -53,7 +53,6 @@ options(stringsAsFactors = FALSE)
 ##----------
 
 library(ropls)
-stopifnot(packageVersion("ropls") == "0.10.16")
 
 ## constants
 ##----------

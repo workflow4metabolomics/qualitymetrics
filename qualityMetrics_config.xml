@@ -1,4 +1,4 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2015.03.18">
+<tool id="quality_metrics" name="Quality Metrics" version="2015.04.28">
   <description>Provides quality metrics and visualization of the data matrix</description>
 	
   <command interpreter="Rscript">
@@ -38,16 +38,9 @@
 
 .. class:: infomark
 
-**Please cite**
-
-Etienne A. Thevenot, Aurelie Roux, Ying Xu, Eric Ezan, and Christophe Junot (2014). Statistical approaches to study the physiological variability of the human urinary metabolome. 8th French Metabolomics and Fluxomics Conference. Lyon, France.
-
----------------------------------------------------
-
-.. class:: infomark
-
 **References**
 
+| Thevenot E., Roux A., Xu Y., Ezan E., and Junot C. Analysis of the human adult urinary metabolome variations with age, body mass index and gender by implementing a comprehensive workflow for univariate and OPLS statistical analyses. *submitted*.
 | Mason R., Tracy N. and Young J. (1997). A practical approach for interpreting multivariate T2 control chart signals. Journal of Quality Technology, 29:396-406.
 | Alonso A., Julia A., Beltran A., Vinaixa M., Diaz M., Ibanez L., Correig X. and Marsal S. (2011). AStream: an R package for annotating LC/MS metabolomic data. Bioinformatics, 27:1339-1340. http://dx.doi.org/10.1093/bioinformatics/btr138
 
