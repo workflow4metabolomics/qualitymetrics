@@ -1,7 +1,7 @@
 <tool id="quality_metrics" name="Quality Metrics" version="2.0.0; 2015-04-30">
   <description>Analyses data to check its quality according to: CV</description>
   <command interpreter="Rscript">
-	QC_wrap.R
+	QualityMetrics_wrapper.R
       dataMatrix_in "$dataMatrix_in"
       sampleMetadata_in "$sampleMetadata_in"
       variableMetadata_in "$variableMetadata_in"
@@ -237,7 +237,7 @@ Figure output
 | You should obtain with this very simplified dataset the following figure:
 |
 
-.. image:: qualityMetrics_workingExampleImage.png
+.. image:: QualityMetrics_workingExampleImage.png
         :width: 600
 
 

@@ -26,7 +26,7 @@ source_local <- function(...){
 	for(i in 1:length(list(...))){source(paste(base_dir, list(...)[[i]], sep="/"))}
 }
 #Import the different functions
-source_local("QC_script.R","RcheckLibrary.R","miniTools.R")
+source_local("QualityMetrics_script.R","RcheckLibrary.R","miniTools.R")
 
 
 if(length(args) < 9){ stop("NOT enough arguments !!!") }
