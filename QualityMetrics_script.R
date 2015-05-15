@@ -188,6 +188,9 @@ qualityMetricsF <- function(datMN,
                             fig.pdfC = NULL,
                             log.txtC = NULL) {
 
+    optWrnN <- options()$warn
+    options(warn = -1)
+
 
     ##------------------------------
     ## Functions
@@ -856,6 +859,7 @@ qualityMetricsF <- function(datMN,
         sink()
 
     options(stingsAsFactors = strAsFacL)
+    options(warn = optWrnN)
 
     return(list(samDF=samDF,
                 varDF=varDF))
