@@ -282,7 +282,7 @@ qualityMetricsF <- function(datMN,
             if("pool" %in% samTypVc)
                 samColVc[grepl("pool", samTypVc)] <- "red"
             if("sample" %in% samTypVc)
-                samColVc[grepl("sample", samTypVc)] <- "green3"
+                samColVc[grepl("sample", samTypVc)] <- "green4"
 
             ## filling in the other types
             palColI <- 1
