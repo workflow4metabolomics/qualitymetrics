@@ -17,6 +17,7 @@
 
 
 library(batch) #necessary for parseCommandArgs function
+library(ropls) ## to be used in qualityMetricsF
 args = parseCommandArgs(evaluate=FALSE) #interpretation of arguments given in command line as an R list of objects
 
 source_local <- function(...){
@@ -25,7 +26,7 @@ source_local <- function(...){
 	for(i in 1:length(list(...))){source(paste(base_dir, list(...)[[i]], sep="/"))}
 }
 #Import the different functions
-source_local("QC_script.R","RcheckLibrary.R","miniTools.R")
+source_local("QualityMetrics_script.R","RcheckLibrary.R","miniTools.R")
 
 
 if(length(args) < 9){ stop("NOT enough arguments !!!") }
@@ -33,10 +34,9 @@ if(length(args) < 9){ stop("NOT enough arguments !!!") }
 
 args$Compa <- as.logical(args$Compa)
 
-
 QualityControl(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata_in,
-       args$CV, args$Compa, args$seuil,
-       args$dataMatrix_out, args$sampleMetadata_out, args$variableMetadata_out)
+               args$CV, args$Compa, args$seuil,
+               args$dataMatrix_out, args$sampleMetadata_out, args$variableMetadata_out, args$figure, args$information)
 
 #QualityControl(ion.file.in, meta.samp.file.in, meta.ion.file.in,
 #       CV, Compa, seuil,

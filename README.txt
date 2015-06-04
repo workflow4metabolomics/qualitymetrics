@@ -1,5 +1,5 @@
-## ****** quality_control environnemnt : ****** ##
-# version December 2014 M Landi / M Petera
+## ****** Quality Metrics environment : ****** ##
+# version 2.0.0 (2015-04-30) M Landi / M Petera / E Thevenot
 
 ## --- PERL compilator / libraries : --- ##
 NA
@@ -12,6 +12,7 @@ Platform: x86_64-redhat-linux-gnu (64-bit)
 
 The dependent libs are :
 >install.packages("batch", dep=TRUE)
+>install.packages("ropls_0.10.22.tar.gz", repos = NULL)
 -- 
 
 ## --- Binary dependencies --- ##
@@ -23,8 +24,9 @@ NA
 --
 
 ## --- XML HELP PART --- ##
-one image : 
+2 images: 
 QualityControl.png
+qualityMetrics_workingExampleImage.png
 --
 
 ## --- DATASETS --- ##
