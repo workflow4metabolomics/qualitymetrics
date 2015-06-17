@@ -1,5 +1,5 @@
 ## ****** Quality Metrics environment : ****** ##
-# version 2.0.0 (2015-04-30) M Landi / M Petera / E Thevenot
+# version 2.1.0 (2015-06-18) M Landi / M Petera / E Thevenot
 
 ## --- PERL compilator / libraries : --- ##
 NA

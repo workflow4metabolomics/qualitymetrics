@@ -1,11 +1,11 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2.0.0; 2015-04-30">
+<tool id="quality_metrics" name="Quality Metrics" version="2.1.0; 2015-06-18">
   <description>Analyses data to check its quality according to: CV</description>
   <command interpreter="Rscript">
 	QualityMetrics_wrapper.R
       dataMatrix_in "$dataMatrix_in"
       sampleMetadata_in "$sampleMetadata_in"
       variableMetadata_in "$variableMetadata_in"
-              
+	               
       CV "${CV_condition.CV}"
       #if str($CV_condition.CV ) == 'TRUE':
         Compa "${CV_condition.Compa}"
@@ -14,6 +14,10 @@
         Compa "TRUE"
         seuil "1"
       #end if
+	  
+	  #if $advPar.optC == "full"
+		poolAsPool1L "$advPar.poolAsPool1L"
+	  #end if
 
       sampleMetadata_out "$sampleMetadata_out"      
       variableMetadata_out "$variableMetadata_out"
@@ -25,7 +29,7 @@
     <param name="dataMatrix_in" type="data" label="Data matrix file" help="" format="tabular" />
     <param name="sampleMetadata_in" type="data" label="Sample metadata file" help="" format="tabular" />
     <param name="variableMetadata_in" type="data" label="Variable metadata file" help="" format="tabular" />
-	
+		
     <conditional name="CV_condition">
       <param name="CV" type="select" label="Coefficient of Variation" help="">
         <option value="FALSE">no</option>
@@ -39,6 +43,18 @@
         <param name="seuil" type="float" label="Threshold" value="1.25" min="0.0000000000000001" help="if comparing pool and sample CVs, corresponds to the max ratio tolerated (basically between 1.0 and 1.25) ; else corresponds to the max pool CV tolerated (basically 0.3)"/>
       </when>
     </conditional>
+	
+	<conditional name="advPar">
+		<param name="optC" type="select" label="Advanced parameters" >
+			<option value="default" selected="true">Use default</option>
+			<option value="full">Full parameter list</option>
+		</param>
+		
+		<when value="full">
+			<param name="poolAsPool1L" type="boolean" checked="true" truevalue="TRUE" falsevalue="FALSE" label="Use 'pool' samples as 'pool1' when computing the correlation with dilution?"/>			
+		</when>
+	</conditional>
+			
   </inputs>
   
   <outputs>
@@ -76,6 +92,7 @@ Description
 
  | The **Quality Metrics** tool provides quality metrics of the samples and variables, and visualization of the data matrix
  | The optional *Coefficient of Variation* arguments allows to flag the variables with a pool CV (or a pool CV over sample CV ratio) above a specific threshold
+  | The advanced *PoolAsPool1* argument is used when correlations with pool dilutions are computed: When set to TRUE [default], samples indicated as "pool" will be considered as "pool1" for the correlation together with the other pool dilutions (e.g. "pool2", "pool4", etc.); otherwise, "pool" samples will not be considered to compute the correlation (this enables the experimenter to have distinct "pool" samples for the computation of CV and "pool1" samples for the computation of dilution)
  | The **sampleMetadata** is returned as output with 3 additional columns containing the p-values for the Hotellings'T2 and Z-scores of intensity deciles and proportion of missing values
  | The **variableMetadata** is returned as output; in case a **sampleType** column is included in the input sampleMetadata file, additional columns will be added to indicate the variable quality metrics (eg mean, sd, CV on 'pool', 'sample' or 'blank', or correlation with pool dilutions, depending on the known type present in the 'sampleType' column)
  | A **figure** is generated (pdf file) which illustrates the main computed sample and variable metric values
@@ -114,7 +131,8 @@ Data matrix
 	|
 
 Sample metadata file
-	| contains the metadata of the samples; in particular, when the 'sampleType' column is available, with known types such as 'blank', 'sample', 'pool', 'poolN' (where N is a dilution factor of the pool), metrics will be computed (eg mean, sd, CV, correlation with the dilution factor, etc) for each variable
+	| contains the metadata of the samples; in particular
+	| when the 'sampleType' column is available, with known types such as 'blank', 'sample', 'pool', 'poolN' (where N is a dilution factor of the pool), metrics will be computed (eg mean, sd, CV, correlation with the dilution factor, etc) for each variable (see the 'PoolAsPool1' argument below)
 	| 'pool' (and 'sample') should be present in the 'sampleType' column when setting the 'coefficient of variation' to TRUE
 	| 
 	
@@ -142,6 +160,9 @@ Threshold (only if CV=yes)
 	| Else corresponds to the max pool CV tolerated (basically 0.3).
 	|
 
+PoolAsPool1 (Advanced parameter)
+	| If 'poolN' (where N is a dilution factor) sample types are present in the 'sampleType' column of the sample metadata file, the Pearson correlation of the intensity with the dilution factor is computed for each variable; the 'PoolAsPool1' parameter indicates whether samples of 'pool' types should be considered as 'pool1' (and hence included in the computation of dilution correlations); default is TRUE
+	
 
 ------------
 Output files

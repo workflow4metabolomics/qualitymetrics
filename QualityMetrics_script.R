@@ -28,6 +28,8 @@ if(FALSE){
 
     CV <- TRUE ; if(CV){Compa<-TRUE;seuil<-1.25}else{Compa<-NULL;seuil<-NULL}
 
+    poolAsPool1L <- FALSE
+
     if(FALSE) { ## Sacuri dataset
 
         ## 'example' input dir
@@ -36,6 +38,8 @@ if(FALSE){
         ion.file.in <- file.path(exaDirInpC, "dataMatrix.tsv")
         meta.samp.file.in <- file.path(exaDirInpC, "sampleMetadata.tsv")
         meta.ion.file.in <- file.path(exaDirInpC, "variableMetadata.tsv")
+
+        poolAsPool1L <- FALSE
 
         ## 'example' output dir
         exaDirOutC <- gsub("input", "output", exaDirInpC)
@@ -52,8 +56,8 @@ if(FALSE){
 }
 
 QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
-                   CV, Compa, seuil,
-                   ion.file.out, meta.samp.file.out, meta.ion.file.out, fig.out, log.out){
+                           CV, Compa, seuil, poolAsPool1L,
+                           ion.file.out, meta.samp.file.out, meta.ion.file.out, fig.out, log.out){
   # This function allows to analyse data to check its quality
   # It needs 3 datasets: the data matrix, the variables' metadata, the samples' metadata.
   # It generates 3 new datasets corresponding to the 3 inputs with additional columns.
@@ -147,6 +151,7 @@ datMN <- datMN[, meta.ion.data[, 1]] ## in case meta.ion.data has been re-ordere
 quaLs <- qualityMetricsF(datMN,
                          meta.samp.data,
                          meta.ion.data,
+                         poolAsPool1L,
                          fig.out,
                          log.out)
 meta.samp.data <- quaLs[["samDF"]]
@@ -185,6 +190,7 @@ write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=F
 qualityMetricsF <- function(datMN,
                             samDF,
                             varDF,
+                            pooAsPo1L = TRUE,
                             fig.pdfC = NULL,
                             log.txtC = NULL) {
 
@@ -756,7 +762,18 @@ qualityMetricsF <- function(datMN,
         pooVi <- grep("pool.*", samDF[, "sampleType"]) ## pool, pool2, pool4, poolInter, ...
 
         pooNamVc <- samDF[pooVi, "sampleType"]
-        pooNamVc[pooNamVc == "pool"] <- "pool1" ## 'pool' -> 'pool1'
+
+        if(pooAsPo1L) {
+
+            pooNamVc[pooNamVc == "pool"] <- "pool1" ## 'pool' -> 'pool1'
+
+        } else {
+
+            pooVl <- pooNamVc == "pool"
+            pooVi <- pooVi[!pooVl]
+            pooNamVc <- pooNamVc[!pooVl]
+
+        }
 
         pooDilVc <- gsub("pool", "", pooNamVc)
 
@@ -770,7 +787,7 @@ qualityMetricsF <- function(datMN,
 
             pooVi <- pooVi[pooDilVl]
 
-            dilVn <- as.numeric(pooDilVc[pooDilVl])
+            dilVn <- 1 / as.numeric(pooDilVc[pooDilVl])
 
             varDF[, "poolDil_correl"] <- apply(datMN[pooVi, , drop=FALSE], 2,
                                                function(varVn) cor(dilVn, varVn))
