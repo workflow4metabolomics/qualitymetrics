@@ -333,16 +333,16 @@ qualityMetricsF <- function(datMN,
         ## PCA and Hotelling ellipse
         ##--------------------------
 
-        vVn <- ropLs[["vVn"]]
+        vVn <- ropLs[["pcaVarVn"]]
         vRelVn <- vVn / ncol(datMN)
 
         par(mar = marLs[["pca"]])
 
-        plot(ropLs[["tMN"]],
+        plot(ropLs[["scoreMN"]],
              type = "n",
              xlab = "",
              ylab = "",
-             xlim = range(ropLs[["tMN"]][, 1]) * 1.1)
+             xlim = range(ropLs[["scoreMN"]][, 1]) * 1.1)
         mtext(paste("t1 (", round(vRelVn[1] * 100), "%)", sep = ""),
               cex = 0.7,
               line = 2,
@@ -357,19 +357,27 @@ qualityMetricsF <- function(datMN,
         radVn <- seq(0, 2 * pi, length.out = 100)
 
         hotFisN <- hotN * qf(1 - thrVn["pvalue"], 2, n - 2)
-        lines(sqrt(var(ropLs[["tMN"]][, 1]) * hotFisN) * cos(radVn),
-              sqrt(var(ropLs[["tMN"]][, 2]) * hotFisN) * sin(radVn))
+        lines(sqrt(var(ropLs[["scoreMN"]][, 1]) * hotFisN) * cos(radVn),
+              sqrt(var(ropLs[["scoreMN"]][, 2]) * hotFisN) * sin(radVn))
 
-        text(ropLs[["tMN"]][, 1],
-             ropLs[["tMN"]][, 2],
+        text(ropLs[["scoreMN"]][, 1],
+             ropLs[["scoreMN"]][, 2],
              cex = 0.7,
              col = obsColVc,
              labels = rownames(datMN))
 
-        if("sampleType" %in% colnames(samDF))
-            ropColF(obsColF(sort(unique(samDF[, "sampleType"]))),
-                    "topleft",
-                    speLegL=TRUE)
+        if("sampleType" %in% colnames(samDF)) {
+            obsColVuc <- obsColVc[sort(unique(names(obsColVc)))]
+            legOrdVc <- c("blank", paste0("pool", 8:1), "pool", "other", "sample")
+            obsColVuc <- obsColVuc[legOrdVc[legOrdVc %in% names(obsColVuc)]]
+
+            text(rep(par("usr")[1], times = length(obsColVuc)),
+                 par("usr")[3] + (0.97 - length(obsColVuc) * 0.03 + 1:length(obsColVuc) * 0.03) * diff(par("usr")[3:4]),
+                 col = obsColVuc,
+                 font = 2,
+                 labels = names(obsColVuc),
+                 pos = 4)
+        }
 
         ## Missing/low intensities and decile values
         ##------------------------------------------
@@ -809,14 +817,14 @@ qualityMetricsF <- function(datMN,
 
     cat("\nObservations: Hotelling ellipse\n", sep="")
 
-    ropLs <- ropF(datMN, ncpN=2, ploVc="none", vrbC="none")
+    ropLs <- opls(datMN, predI = 2, plotL = FALSE, printL = FALSE)
 
-    invCovScoMN <- solve(cov(ropLs[["tMN"]]))
+    invCovScoMN <- solve(cov(ropLs[["scoreMN"]]))
 
     n <- nrow(datMN)
     hotN <- 2 * (n - 1) * (n^2 - 1) / (n^2 * (n - 2))
 
-    hotPvaVn <- apply(ropLs[["tMN"]],
+    hotPvaVn <- apply(ropLs[["scoreMN"]],
                       1,
                       function(x)
                       1 - pf(1 / hotN * t(as.matrix(x)) %*% invCovScoMN %*% as.matrix(x), 2, n - 2))
