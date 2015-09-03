@@ -1,5 +1,5 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2.1.0; 2015-06-18">
-  <description>Analyses data to check its quality according to: CV</description>
+<tool id="quality_metrics" name="Quality Metrics" version="2.2.2; 2015-09-03">
+  <description>Metrics and graphics to check the quality of the data</description>
   <command interpreter="Rscript">
 	QualityMetrics_wrapper.R
       dataMatrix_in "$dataMatrix_in"
@@ -70,6 +70,14 @@
 
 **Authors** Marion Landi, Melanie Petera and Etienne Thevenot (W4M Core Development Team)
 
+---------------------------------------------------
+
+.. class:: infomark
+
+**Tool updates**
+
+See the **NEWS** section at the bottom of this page
+  
 ---------------------------------------------------
 
 .. class:: infomark
@@ -200,6 +208,11 @@ information.txt
 Working example
 ---------------
 
+|
+
+.. class:: infomark
+
+See also the **demo_workflow_normalization** and **demo_history_normalization** in the **Shared Data/Published Workflows** and **Shared Data/Published Histories** menu
 
 
 Input files
@@ -261,6 +274,16 @@ Figure output
 .. image:: QualityMetrics_workingExampleImage.png
         :width: 600
 
+---------------------------------------------------
+
+----
+NEWS
+----
+
+CHANGES IN VERSION 2.2.2
+========================
+
+Minor internal changes
 
 	</help>
 </tool>
