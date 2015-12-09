@@ -34,8 +34,14 @@ if(length(args) < 9){ stop("NOT enough arguments !!!") }
 
 args$Compa <- as.logical(args$Compa)
 
+if("poolAsPool1L" %in% names(args)) {
+    args$poolAsPool1L <- as.logical(args$poolAsPool1L)
+} else
+    args$poolAsPool1L <- TRUE
+
+
 QualityControl(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata_in,
-               args$CV, args$Compa, args$seuil,
+               args$CV, args$Compa, args$seuil, args$poolAsPool1L,
                args$dataMatrix_out, args$sampleMetadata_out, args$variableMetadata_out, args$figure, args$information)
 
 #QualityControl(ion.file.in, meta.samp.file.in, meta.ion.file.in,

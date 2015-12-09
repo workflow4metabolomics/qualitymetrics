@@ -28,6 +28,8 @@ if(FALSE){
 
     CV <- TRUE ; if(CV){Compa<-TRUE;seuil<-1.25}else{Compa<-NULL;seuil<-NULL}
 
+    poolAsPool1L <- FALSE
+
     if(FALSE) { ## Sacuri dataset
 
         ## 'example' input dir
@@ -36,6 +38,8 @@ if(FALSE){
         ion.file.in <- file.path(exaDirInpC, "dataMatrix.tsv")
         meta.samp.file.in <- file.path(exaDirInpC, "sampleMetadata.tsv")
         meta.ion.file.in <- file.path(exaDirInpC, "variableMetadata.tsv")
+
+        poolAsPool1L <- FALSE
 
         ## 'example' output dir
         exaDirOutC <- gsub("input", "output", exaDirInpC)
@@ -52,8 +56,8 @@ if(FALSE){
 }
 
 QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
-                   CV, Compa, seuil,
-                   ion.file.out, meta.samp.file.out, meta.ion.file.out, fig.out, log.out){
+                           CV, Compa, seuil, poolAsPool1L,
+                           ion.file.out, meta.samp.file.out, meta.ion.file.out, fig.out, log.out){
   # This function allows to analyse data to check its quality
   # It needs 3 datasets: the data matrix, the variables' metadata, the samples' metadata.
   # It generates 3 new datasets corresponding to the 3 inputs with additional columns.
@@ -147,6 +151,7 @@ datMN <- datMN[, meta.ion.data[, 1]] ## in case meta.ion.data has been re-ordere
 quaLs <- qualityMetricsF(datMN,
                          meta.samp.data,
                          meta.ion.data,
+                         poolAsPool1L,
                          fig.out,
                          log.out)
 meta.samp.data <- quaLs[["samDF"]]
@@ -185,6 +190,7 @@ write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=F
 qualityMetricsF <- function(datMN,
                             samDF,
                             varDF,
+                            pooAsPo1L = TRUE,
                             fig.pdfC = NULL,
                             log.txtC = NULL) {
 
@@ -327,16 +333,16 @@ qualityMetricsF <- function(datMN,
         ## PCA and Hotelling ellipse
         ##--------------------------
 
-        vVn <- ropLs[["vVn"]]
+        vVn <- ropLs[["pcaVarVn"]]
         vRelVn <- vVn / ncol(datMN)
 
         par(mar = marLs[["pca"]])
 
-        plot(ropLs[["tMN"]],
+        plot(ropLs[["scoreMN"]],
              type = "n",
              xlab = "",
              ylab = "",
-             xlim = range(ropLs[["tMN"]][, 1]) * 1.1)
+             xlim = range(ropLs[["scoreMN"]][, 1]) * 1.1)
         mtext(paste("t1 (", round(vRelVn[1] * 100), "%)", sep = ""),
               cex = 0.7,
               line = 2,
@@ -351,19 +357,27 @@ qualityMetricsF <- function(datMN,
         radVn <- seq(0, 2 * pi, length.out = 100)
 
         hotFisN <- hotN * qf(1 - thrVn["pvalue"], 2, n - 2)
-        lines(sqrt(var(ropLs[["tMN"]][, 1]) * hotFisN) * cos(radVn),
-              sqrt(var(ropLs[["tMN"]][, 2]) * hotFisN) * sin(radVn))
+        lines(sqrt(var(ropLs[["scoreMN"]][, 1]) * hotFisN) * cos(radVn),
+              sqrt(var(ropLs[["scoreMN"]][, 2]) * hotFisN) * sin(radVn))
 
-        text(ropLs[["tMN"]][, 1],
-             ropLs[["tMN"]][, 2],
+        text(ropLs[["scoreMN"]][, 1],
+             ropLs[["scoreMN"]][, 2],
              cex = 0.7,
              col = obsColVc,
              labels = rownames(datMN))
 
-        if("sampleType" %in% colnames(samDF))
-            ropColF(obsColF(sort(unique(samDF[, "sampleType"]))),
-                    "topleft",
-                    speLegL=TRUE)
+        if("sampleType" %in% colnames(samDF)) {
+            obsColVuc <- obsColVc[sort(unique(names(obsColVc)))]
+            legOrdVc <- c("blank", paste0("pool", 8:1), "pool", "other", "sample")
+            obsColVuc <- obsColVuc[legOrdVc[legOrdVc %in% names(obsColVuc)]]
+
+            text(rep(par("usr")[1], times = length(obsColVuc)),
+                 par("usr")[3] + (0.97 - length(obsColVuc) * 0.03 + 1:length(obsColVuc) * 0.03) * diff(par("usr")[3:4]),
+                 col = obsColVuc,
+                 font = 2,
+                 labels = names(obsColVuc),
+                 pos = 4)
+        }
 
         ## Missing/low intensities and decile values
         ##------------------------------------------
@@ -756,7 +770,18 @@ qualityMetricsF <- function(datMN,
         pooVi <- grep("pool.*", samDF[, "sampleType"]) ## pool, pool2, pool4, poolInter, ...
 
         pooNamVc <- samDF[pooVi, "sampleType"]
-        pooNamVc[pooNamVc == "pool"] <- "pool1" ## 'pool' -> 'pool1'
+
+        if(pooAsPo1L) {
+
+            pooNamVc[pooNamVc == "pool"] <- "pool1" ## 'pool' -> 'pool1'
+
+        } else {
+
+            pooVl <- pooNamVc == "pool"
+            pooVi <- pooVi[!pooVl]
+            pooNamVc <- pooNamVc[!pooVl]
+
+        }
 
         pooDilVc <- gsub("pool", "", pooNamVc)
 
@@ -770,7 +795,7 @@ qualityMetricsF <- function(datMN,
 
             pooVi <- pooVi[pooDilVl]
 
-            dilVn <- as.numeric(pooDilVc[pooDilVl])
+            dilVn <- 1 / as.numeric(pooDilVc[pooDilVl])
 
             varDF[, "poolDil_correl"] <- apply(datMN[pooVi, , drop=FALSE], 2,
                                                function(varVn) cor(dilVn, varVn))
@@ -792,14 +817,14 @@ qualityMetricsF <- function(datMN,
 
     cat("\nObservations: Hotelling ellipse\n", sep="")
 
-    ropLs <- ropF(datMN, ncpN=2, ploVc="none", vrbC="none")
+    ropLs <- opls(datMN, predI = 2, plotL = FALSE, printL = FALSE)
 
-    invCovScoMN <- solve(cov(ropLs[["tMN"]]))
+    invCovScoMN <- solve(cov(ropLs[["scoreMN"]]))
 
     n <- nrow(datMN)
     hotN <- 2 * (n - 1) * (n^2 - 1) / (n^2 * (n - 2))
 
-    hotPvaVn <- apply(ropLs[["tMN"]],
+    hotPvaVn <- apply(ropLs[["scoreMN"]],
                       1,
                       function(x)
                       1 - pf(1 / hotN * t(as.matrix(x)) %*% invCovScoMN %*% as.matrix(x), 2, n - 2))

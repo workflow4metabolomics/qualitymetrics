@@ -1,5 +1,5 @@
 ## ****** Quality Metrics environment : ****** ##
-# version 2.0.0 (2015-04-30) M Landi / M Petera / E Thevenot
+# version 2.2.2 (2015-09-03) M Landi / M Petera / E Thevenot
 
 ## --- PERL compilator / libraries : --- ##
 NA
@@ -7,12 +7,13 @@ NA
 
 ## --- R bin and Packages : --- ##
 $ R --version
-R version 3.0.2 (2013-05-16) -- "Good Sport"
+R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
 Platform: x86_64-redhat-linux-gnu (64-bit)
 
 The dependent libs are :
->install.packages("batch", dep=TRUE)
->install.packages("ropls_0.10.22.tar.gz", repos = NULL)
+> install.packages("batch", dep=TRUE)
+> source("http://www.bioconductor.org/biocLite.R")
+> biocLite("ropls")
 -- 
 
 ## --- Binary dependencies --- ##
