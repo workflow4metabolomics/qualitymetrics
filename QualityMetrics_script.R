@@ -97,6 +97,7 @@ samp.id <- samp.id$id.match
 # 	and confronted to a given ration.
 # Compa=FALSE:
 # 	only CV of pools are considered ; compared to a given threshold
+
 if(CV){
 
   # Checking the sampleType variable
@@ -333,16 +334,16 @@ qualityMetricsF <- function(datMN,
         ## PCA and Hotelling ellipse
         ##--------------------------
 
-        vVn <- ropLs[["pcaVarVn"]]
+        vVn <- getPcaVarVn(ropLs)
         vRelVn <- vVn / ncol(datMN)
 
         par(mar = marLs[["pca"]])
 
-        plot(ropLs[["scoreMN"]],
+        plot(ropScoreMN,
              type = "n",
              xlab = "",
              ylab = "",
-             xlim = range(ropLs[["scoreMN"]][, 1]) * 1.1)
+             xlim = range(ropScoreMN[, 1]) * 1.1)
         mtext(paste("t1 (", round(vRelVn[1] * 100), "%)", sep = ""),
               cex = 0.7,
               line = 2,
@@ -357,11 +358,11 @@ qualityMetricsF <- function(datMN,
         radVn <- seq(0, 2 * pi, length.out = 100)
 
         hotFisN <- hotN * qf(1 - thrVn["pvalue"], 2, n - 2)
-        lines(sqrt(var(ropLs[["scoreMN"]][, 1]) * hotFisN) * cos(radVn),
-              sqrt(var(ropLs[["scoreMN"]][, 2]) * hotFisN) * sin(radVn))
+        lines(sqrt(var(ropScoreMN[, 1]) * hotFisN) * cos(radVn),
+              sqrt(var(ropScoreMN[, 2]) * hotFisN) * sin(radVn))
 
-        text(ropLs[["scoreMN"]][, 1],
-             ropLs[["scoreMN"]][, 2],
+        text(ropScoreMN[, 1],
+             ropScoreMN[, 2],
              cex = 0.7,
              col = obsColVc,
              labels = rownames(datMN))
@@ -819,12 +820,14 @@ qualityMetricsF <- function(datMN,
 
     ropLs <- opls(datMN, predI = 2, plotL = FALSE, printL = FALSE)
 
-    invCovScoMN <- solve(cov(ropLs[["scoreMN"]]))
+    ropScoreMN <- getScoreMN(ropLs)
+
+    invCovScoMN <- solve(cov(ropScoreMN))
 
     n <- nrow(datMN)
     hotN <- 2 * (n - 1) * (n^2 - 1) / (n^2 * (n - 2))
 
-    hotPvaVn <- apply(ropLs[["scoreMN"]],
+    hotPvaVn <- apply(ropScoreMN,
                       1,
                       function(x)
                       1 - pf(1 / hotN * t(as.matrix(x)) %*% invCovScoMN %*% as.matrix(x), 2, n - 2))

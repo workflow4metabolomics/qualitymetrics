@@ -17,7 +17,6 @@
 
 
 library(batch) #necessary for parseCommandArgs function
-library(ropls) ## to be used in qualityMetricsF
 args = parseCommandArgs(evaluate=FALSE) #interpretation of arguments given in command line as an R list of objects
 
 source_local <- function(...){
@@ -29,8 +28,15 @@ source_local <- function(...){
 source_local("QualityMetrics_script.R","RcheckLibrary.R","miniTools.R")
 
 
-if(length(args) < 9){ stop("NOT enough arguments !!!") }
+#### Start_of_testing_code <- function() {}
 
+
+suppressMessages(library(ropls)) ## to be used in qualityMetricsF
+
+if(packageVersion("ropls") < "1.4.0")
+    stop("Please use 'ropls' versions of 1.4.0 and above")
+
+if(length(args) < 9){ stop("NOT enough arguments !!!") }
 
 args$Compa <- as.logical(args$Compa)
 
@@ -50,3 +56,6 @@ QualityControl(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata
 
 #delete the parameters to avoid the passage to the next tool in .RData image
 rm(args)
+
+
+#### End_of_testing_code <- function() {}
