@@ -1,75 +1,113 @@
+#!/usr/bin/env Rscript
+
 library(RUnit)
 
-wrapperF <- function(argVc) {
+## Package
+##--------
 
-    source("../QualityMetrics_script.R")
-    source("../RcheckLibrary.R")
-    source("../miniTools.R")
+library(RUnit)
 
-    args <- as.list(argVc)
+## Constants
+##----------
 
-#### Start_of_testing_code <- function() {}
+testOutDirC <- "output"
+argVc <- commandArgs(trailingOnly = FALSE)
+scriptPathC <- sub("--file=", "", argVc[grep("--file=", argVc)])
 
-    suppressMessages(library(ropls)) ## to be used in qualityMetricsF
+## Functions
+##-----------
 
-    if(packageVersion("ropls") < "1.4.0")
-        stop("Please use 'ropls' versions of 1.4.0 and above")
+## Reading tables (matrix or data frame)
+readTableF <- function(fileC, typeC = c("matrix", "dataframe")[1]) {
 
-    if(length(args) < 9){ stop("NOT enough arguments !!!") }
+    	file.exists(fileC) || stop(paste0("No output file \"", fileC ,"\"."))
 
-    args$Compa <- as.logical(args$Compa)
-
-    if("poolAsPool1L" %in% names(args)) {
-        args$poolAsPool1L <- as.logical(args$poolAsPool1L)
-    } else
-        args$poolAsPool1L <- TRUE
-
-
-    QualityControl(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata_in,
-                   args$CV, args$Compa, args$seuil, args$poolAsPool1L,
-                   args$dataMatrix_out, args$sampleMetadata_out, args$variableMetadata_out, args$figure, args$information)
-
-    rm(args)
-
-#### End_of_testing_code <- function() {}
+        switch(typeC,
+               matrix = return(t(as.matrix(read.table(file = fileC,
+                   header = TRUE,
+                   row.names = 1,
+                   sep = "\t",
+                   stringsAsFactors = FALSE)))),
+               dataframe = return(read.table(file = fileC,
+                   header = TRUE,
+                   row.names = 1,
+                   sep = "\t",
+                   stringsAsFactors = FALSE)))
 
 }
 
-exaDirOutC <- "output"
-stopifnot(file.exists(exaDirOutC))
+## Call wrapper
+wrapperCallF <- function(paramLs) {
 
-tesArgLs <- list(input_default = c(CV = "FALSE",
-                     Compa = "TRUE",
-                     seuil = 1))
+	## Set program path
+    	wrapperPathC <- file.path(dirname(scriptPathC), "..", "QualityMetrics_wrapper.R")
 
-for(tesC in names(tesArgLs))
-    tesArgLs[[tesC]] <- c(tesArgLs[[tesC]],
-                          dataMatrix_in = file.path(unlist(strsplit(tesC, "_"))[1], "dataMatrix.tsv"),
-                          sampleMetadata_in = file.path(unlist(strsplit(tesC, "_"))[1], "sampleMetadata.tsv"),
-                          variableMetadata_in = file.path(unlist(strsplit(tesC, "_"))[1], "variableMetadata.tsv"),
-                          dataMatrix_out = file.path(exaDirOutC, "dataMatrix.tsv"),
-                          sampleMetadata_out = file.path(exaDirOutC, "sampleMetadata.tsv"),
-                          variableMetadata_out = file.path(exaDirOutC, "variableMetadata.tsv"),
-                          figure = file.path(exaDirOutC, "figure.pdf"),
-                          information = file.path(exaDirOutC, "information.txt"))
+	## Set arguments
+	argLs <- NULL
+	for (parC in names(paramLs))
+		argLs <- c(argLs, parC, paramLs[[parC]])
 
-for(tesC in names(tesArgLs)) {
-    print(tesC)
-    wrapperF(tesArgLs[[tesC]])
-    if(tesC == "input_default") {
-        samDF <- read.table(file.path(exaDirOutC, "sampleMetadata.tsv"),
-                            header = TRUE,
-                            row.names = 1,
-                            sep = "\t",
-                            stringsAsFactors = FALSE)
-        stopifnot(checkEqualsNumeric(samDF["sam_44", "hotelling_pval"], 0.4655357, tolerance = 1e-6))
-        varDF <- read.table(file.path(exaDirOutC, "variableMetadata.tsv"),
-                            header = TRUE,
-                            row.names = 1,
-                            sep = "\t",
-                            stringsAsFactors = FALSE)
-        stopifnot(checkEqualsNumeric(varDF["met_033", "blankMean_over_sampleMean"], 0.004417387, tolerance = 1e-6))
-    }
+	## Call
+	wrapperCallC <- paste(c(wrapperPathC, argLs), collapse = " ")
+
+        if(.Platform$OS.type == "windows")
+            wrapperCallC <- paste("Rscript", wrapperCallC)
+
+	wrapperCodeN <- system(wrapperCallC)
+
+	if (wrapperCodeN != 0)
+		stop("Error when running heatmap_wrapper.R.")
+
+	## Get output
+	outLs <- list()
+	if ("dataMatrix_out" %in% names(paramLs))
+            outLs[["datMN"]] <- readTableF(paramLs[["dataMatrix_out"]], "matrix")
+	if ("sampleMetadata_out" %in% names(paramLs))
+            outLs[["samDF"]] <- readTableF(paramLs[["sampleMetadata_out"]], "dataframe")
+	if ("variableMetadata_out" %in% names(paramLs))
+            outLs[["varDF"]] <- readTableF(paramLs[["variableMetadata_out"]], "dataframe")
+        if("information" %in% names(paramLs))
+            outLs[["infVc"]] <- readLines(paramLs[["information"]])
+
+	return(outLs)
 }
 
-message("Checks successfully completed")
+## Setting default parameters
+defaultArgF <- function(testInDirC) {
+
+    defaultArgLs <- list()
+    if(file.exists(file.path(dirname(scriptPathC), testInDirC, "dataMatrix.tsv")))
+        defaultArgLs[["dataMatrix_in"]] <- file.path(dirname(scriptPathC), testInDirC, "dataMatrix.tsv")
+    if(file.exists(file.path(dirname(scriptPathC), testInDirC, "sampleMetadata.tsv")))
+        defaultArgLs[["sampleMetadata_in"]] <- file.path(dirname(scriptPathC), testInDirC, "sampleMetadata.tsv")
+    if(file.exists(file.path(dirname(scriptPathC), testInDirC, "variableMetadata.tsv")))
+        defaultArgLs[["variableMetadata_in"]] <- file.path(dirname(scriptPathC), testInDirC, "variableMetadata.tsv")
+
+    if(file.exists(file.path(dirname(scriptPathC), testOutDirC, "dataMatrix.tsv")))
+        defaultArgLs[["dataMatrix_out"]] <- file.path(dirname(scriptPathC), testOutDirC, "dataMatrix.tsv")
+    if(file.exists(file.path(dirname(scriptPathC), testOutDirC, "sampleMetadata.tsv")))
+        defaultArgLs[["sampleMetadata_out"]] <- file.path(dirname(scriptPathC), testOutDirC, "sampleMetadata.tsv")
+    if(file.exists(file.path(dirname(scriptPathC), testOutDirC, "variableMetadata.tsv")))
+        defaultArgLs[["variableMetadata_out"]] <- file.path(dirname(scriptPathC), testOutDirC, "variableMetadata.tsv")
+    if(file.exists(file.path(dirname(scriptPathC), testOutDirC, "figure.pdf")))
+        defaultArgLs[["figure"]] <- file.path(dirname(scriptPathC), testOutDirC, "figure.pdf")
+    if(file.exists(file.path(dirname(scriptPathC), testOutDirC, "information.txt")))
+        defaultArgLs[["information"]] <- file.path(dirname(scriptPathC), testOutDirC, "information.txt")
+
+    defaultArgLs
+
+}
+
+## Main
+##-----
+
+## Create output folder
+file.exists(testOutDirC) || dir.create(testOutDirC)
+
+## Run tests
+test.suite <- defineTestSuite('tests', dirname(scriptPathC), testFileRegexp = paste0('^.*_tests\\.R$'), testFuncRegexp = '^.*$')
+isValidTestSuite(test.suite)
+test.results <- runTestSuite(test.suite)
+print(test.results)
+
+
