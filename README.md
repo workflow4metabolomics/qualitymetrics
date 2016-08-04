@@ -1,6 +1,8 @@
 ## Metrics and graphics to assess the quality of the data 
 #### A Galaxy module from the [Workflow4metabolomics](http://workflow4metabolomics.org) project
 
+Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetrics.svg?branch=master)](https://travis-ci.org/workflow4metabolomics/qualitymetrics).
+
 ### Description
 
 **Version:** 2.2.4  

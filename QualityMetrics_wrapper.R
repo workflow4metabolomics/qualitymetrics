@@ -36,12 +36,7 @@ if(packageVersion("ropls") < "1.4.0")
 if(length(args) < 9){ stop("NOT enough arguments !!!") }
 
 args$Compa <- as.logical(args$Compa)
-
-if("poolAsPool1L" %in% names(args)) {
-    args$poolAsPool1L <- as.logical(args$poolAsPool1L)
-} else
-    args$poolAsPool1L <- TRUE
-
+args$poolAsPool1L <- as.logical(args$poolAsPool1L)
 
 QualityControl(args$dataMatrix_in, args$sampleMetadata_in, args$variableMetadata_in,
                args$CV, args$Compa, args$seuil, args$poolAsPool1L,

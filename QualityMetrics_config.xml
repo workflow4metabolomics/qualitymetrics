@@ -28,6 +28,8 @@
   
   #if $advPar.optC == "full"
   poolAsPool1L "$advPar.poolAsPool1L"
+  #else:
+  poolAsPool1L "TRUE"
   #end if
   
   sampleMetadata_out "$sampleMetadata_out"      
@@ -80,6 +82,17 @@
     <data name="figure" label="${tool.name}_figure.pdf" format="pdf"/>
     <data name="information" label="${tool.name}_information.txt" format="txt"/>
   </outputs>
+
+  <tests>
+    <test>
+      <param name="dataMatrix_in" value="input-dataMatrix.tsv"/>
+      <param name="sampleMetadata_in" value="input-sampleMetadata.tsv"/>
+      <param name="variableMetadata_in" value="input-variableMetadata.tsv"/>
+      <param name="CV" value="FALSE"/>
+      <param name="optC" value="default"/>
+      <output name="variableMetadata_out" file="output-variableMetadata.tsv"/>
+    </test>
+  </tests>
   
   <help>
     

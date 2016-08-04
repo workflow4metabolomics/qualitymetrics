@@ -3,7 +3,8 @@ test_input_default <- function() {
     testDirC <- "input"
     argLs <- list(CV = "FALSE",
                   Compa = "TRUE",
-                  seuil = 1)
+                  seuil = 1,
+                  poolAsPool1L = "TRUE")
 
     argLs <- c(defaultArgF(testDirC), argLs)
     outLs <- wrapperCallF(argLs)
