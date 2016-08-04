@@ -3,8 +3,8 @@
 
 ### Description
 
-**Version:** 2.2.3  
-**Date:** 2016-07-27  
+**Version:** 2.2.4  
+**Date:** 2016-08-04  
 **Author:** Marion Landi (INRA, PFEM), Mélanie Pétéra (INRA, PFEM), and Etienne A. Thévenot (CEA, LIST)  
 **Email:** [melanie.petera(at)clermont.inra.fr](mailto:melanie.petera@clermont.inra.fr), [etienne.thevenot(at)cea.fr](mailto:etienne.thevenot@cea.fr)  
 **Citation:**  
@@ -32,15 +32,21 @@
 
 ### Tests
 
-The code in the wrapper can be tested by running the **tests/qualityMetrics_tests.R** in R  
+The code in the wrapper can be tested by running the **runit/qualitymetrics_runtests.R** R file 
 
 ### News
+
+##### CHANGES IN VERSION 2.2.4  
+
+INTERNAL MODIFICATION    
+
+    o Additional running and installation tests added with planemo, conda, and travis  
 
 ##### CHANGES IN VERSION 2.2.3  
 
 INTERNAL MODIFICATION    
 
-    o Modifications of the **QualityMetrics_script.R** file to handle the recent **ropls** package versions (i.e. 1.3.15 and above) which use S4 classes  
+    o Modifications of the 'QualityMetrics_script.R' file to handle the recent 'ropls' package versions (i.e. 1.3.15 and above) which use S4 classes  
 
     o Creating tests for the R code  
     

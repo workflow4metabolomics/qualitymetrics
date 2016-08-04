@@ -1,35 +1,46 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2.2.3; 2016-07-27">
+<tool id="quality_metrics" name="Quality Metrics" version="2.2.4">
   <description>Metrics and graphics to check the quality of the data</description>
-  <command interpreter="Rscript">
-	QualityMetrics_wrapper.R
-      dataMatrix_in "$dataMatrix_in"
-      sampleMetadata_in "$sampleMetadata_in"
-      variableMetadata_in "$variableMetadata_in"
-	               
-      CV "${CV_condition.CV}"
-      #if str($CV_condition.CV ) == 'TRUE':
-        Compa "${CV_condition.Compa}"
-        seuil  "${CV_condition.seuil}"
-      #else:
-        Compa "TRUE"
-        seuil "1"
-      #end if
-	  
-	  #if $advPar.optC == "full"
-		poolAsPool1L "$advPar.poolAsPool1L"
-	  #end if
 
-      sampleMetadata_out "$sampleMetadata_out"      
-      variableMetadata_out "$variableMetadata_out"
-	  figure "$figure"
-      information "$information"
-  </command>
+  <requirements>
+    <requirement type="package" version="3.2.2">R</requirement>
+    <requirement type="package">r-batch</requirement>
+    <requirement type="package" version="1.4.2">bioconductor-ropls</requirement>
+  </requirements>
+  
+  <stdio>
+    <exit_code range="1:" level="fatal" />
+  </stdio>
+  
+  <command><![CDATA[
+  $__tool_directory__/QualityMetrics_wrapper.R
+  dataMatrix_in "$dataMatrix_in"
+  sampleMetadata_in "$sampleMetadata_in"
+  variableMetadata_in "$variableMetadata_in"
+  
+  CV "${CV_condition.CV}"
+  #if str($CV_condition.CV ) == 'TRUE':
+  Compa "${CV_condition.Compa}"
+  seuil  "${CV_condition.seuil}"
+  #else:
+  Compa "TRUE"
+  seuil "1"
+  #end if
+  
+  #if $advPar.optC == "full"
+  poolAsPool1L "$advPar.poolAsPool1L"
+  #end if
+  
+  sampleMetadata_out "$sampleMetadata_out"      
+  variableMetadata_out "$variableMetadata_out"
+  figure "$figure"
+  information "$information"
+  ]]></command>
   
   <inputs>
     <param name="dataMatrix_in" type="data" label="Data matrix file" help="" format="tabular" />
     <param name="sampleMetadata_in" type="data" label="Sample metadata file" help="" format="tabular" />
     <param name="variableMetadata_in" type="data" label="Variable metadata file" help="" format="tabular" />
-		
+    
     <conditional name="CV_condition">
       <param name="CV" type="select" label="Coefficient of Variation" help="">
         <option value="FALSE">no</option>
@@ -42,30 +53,36 @@
         </param>
         <param name="seuil" type="float" label="Threshold" value="1.25" min="0.0000000000000001" help="if comparing pool and sample CVs, corresponds to the max ratio tolerated (basically between 1.0 and 1.25) ; else corresponds to the max pool CV tolerated (basically 0.3)"/>
       </when>
+      <when value="FALSE">
+	<param name="Compa" type="hidden" value="TRUE"/>
+	<param name="seuil" type="hidden" value="1"/>
+      </when>	
     </conditional>
-	
-	<conditional name="advPar">
-		<param name="optC" type="select" label="Advanced parameters" >
-			<option value="default" selected="true">Use default</option>
-			<option value="full">Full parameter list</option>
-		</param>
-		
-		<when value="full">
-			<param name="poolAsPool1L" type="boolean" checked="true" truevalue="TRUE" falsevalue="FALSE" label="Use 'pool' samples as 'pool1' when computing the correlation with dilution?"/>			
-		</when>
-	</conditional>
-			
+    
+    <conditional name="advPar">
+      <param name="optC" type="select" label="Advanced parameters" >
+	<option value="default" selected="true">Use default</option>
+	<option value="full">Full parameter list</option>
+      </param>     
+      <when value="full">
+	<param name="poolAsPool1L" type="boolean" checked="true" truevalue="TRUE" falsevalue="FALSE" label="Use 'pool' samples as 'pool1' when computing the correlation with dilution?"/>
+      </when>
+      <when value="default">
+      	<param name="poolAsPool1L" type="hidden" value="TRUE"/>
+      </when>
+    </conditional>
+    
   </inputs>
   
   <outputs>
     <data name="sampleMetadata_out" label="${tool.name}_${sampleMetadata_in.name}" format="tabular" ></data>
     <data name="variableMetadata_out" label="${tool.name}_${variableMetadata_in.name}" format="tabular" ></data>
-	<data name="figure" label="${tool.name}_figure.pdf" format="pdf"/>
-	<data name="information" label="${tool.name}_information.txt" format="txt"/>
+    <data name="figure" label="${tool.name}_figure.pdf" format="pdf"/>
+    <data name="information" label="${tool.name}_information.txt" format="txt"/>
   </outputs>
   
   <help>
-
+    
 .. class:: infomark
 
 **Authors** Marion Landi, Melanie Petera and Etienne Thevenot (W4M Core Development Team)
@@ -220,6 +237,11 @@ See the **W4M00001b_sacurine-complete** shared history in the **Shared Data/Publ
 NEWS
 ----
 
+CHANGES IN VERSION 2.2.4
+========================
+
+Additional running and installation tests added with planemo, conda, and travis
+
 CHANGES IN VERSION 2.2.3
 ========================
 
@@ -235,7 +257,24 @@ CHANGES IN VERSION 2.2.2
 Minor internal changes
 
 
-	</help>
+</help>
+
+<citations>
+  <citation type="doi">10.1021/acs.jproteome.5b00354</citation>
+  <citation type="doi">10.1093/bioinformatics/btr138</citation>
+  <citation type="bibtex">@Article{Mason1997,
+  Title                    = {A practical approach for interpreting multivariate T2 control chart signals},
+  Author                   = {Mason, RL. and Tracy, ND. and Young, JC.},
+  Journal                  = {Journal of Quality Technology},
+  Year                     = {1997},
+  Number                   = {4},
+  Pages                    = {396-406},
+  Volume                   = {29},
+  }</citation>
+  <citation type="doi">10.1093/bioinformatics/btu813</citation>
+</citations>
+
+<!--
 
 Input files
 ===========
@@ -296,5 +335,6 @@ Figure output
 .. image:: QualityMetrics_workingExampleImage.png
         :width: 600
 
+-->
 
 </tool>
