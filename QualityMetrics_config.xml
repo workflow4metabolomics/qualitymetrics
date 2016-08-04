@@ -2,7 +2,7 @@
   <description>Metrics and graphics to check the quality of the data</description>
 
   <requirements>
-    <requirement type="package" version="3.2.2">R</requirement>
+    <requirement type="package" version="3.3.1">R</requirement>
     <requirement type="package">r-batch</requirement>
     <requirement type="package" version="1.4.2">bioconductor-ropls</requirement>
   </requirements>
