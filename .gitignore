@@ -1,2 +1,6 @@
-archive/
-tests/output/
+runit/output/
+tool_test_output.html
+tool_test_output.json
+.#*
+\#*#
+*~
