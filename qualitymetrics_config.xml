@@ -91,6 +91,7 @@
       <param name="CV" value="FALSE"/>
       <param name="optC" value="default"/>
       <output name="sampleMetadata_out" file="output-sampleMetadata.tsv"/>
+      <output name="variableMetadata_out" file="output-variableMetadata.tsv"/>
     </test>
   </tests>
   
