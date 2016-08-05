@@ -90,7 +90,7 @@
       <param name="variableMetadata_in" value="input-variableMetadata.tsv"/>
       <param name="CV" value="FALSE"/>
       <param name="optC" value="default"/>
-      <output name="variableMetadata_out" file="output-variableMetadata.tsv"/>
+      <output name="sampleMetadata_out" file="output-sampleMetadata.tsv"/>
     </test>
   </tests>
   
