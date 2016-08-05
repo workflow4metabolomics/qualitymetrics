@@ -12,7 +12,7 @@
   </stdio>
   
   <command><![CDATA[
-  $__tool_directory__/qualitymetrics_wrapper.R
+  Rscript $__tool_directory__/qualitymetrics_wrapper.R
   dataMatrix_in "$dataMatrix_in"
   sampleMetadata_in "$sampleMetadata_in"
   variableMetadata_in "$variableMetadata_in"
