@@ -17,14 +17,14 @@ Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetr
 ### Installation
 
 * Configuration file:
-    + **QualityMetrics_config.xml**  
+    + **qualitymetrics_config.xml**  
 * Image files: 
     + **static/images/QualityControl.png**    
-    + **static/images/QualityMetrics_workingExampleImage.png**      
+    + **static/images/qualitymetrics_workingExampleImage.png**      
 * Wrapper file:
-    + **QualityMetrics_wrapper.R**  
+    + **qualitymetrics_wrapper.R**  
 * Script file:
-    + **QualityMetrics_script.R**  
+    + **qualitymetrics_script.R**  
 * R packages  
     + **batch** from CRAN      
 > install.packages("batch", dep=TRUE)    
@@ -48,7 +48,7 @@ INTERNAL MODIFICATION
 
 INTERNAL MODIFICATION    
 
-    o Modifications of the 'QualityMetrics_script.R' file to handle the recent 'ropls' package versions (i.e. 1.3.15 and above) which use S4 classes  
+    o Modifications of the 'qualitymetrics_script.R' file to handle the recent 'ropls' package versions (i.e. 1.3.15 and above) which use S4 classes  
 
     o Creating tests for the R code  
     

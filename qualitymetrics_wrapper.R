@@ -25,7 +25,7 @@ source_local <- function(...){
 	for(i in 1:length(list(...))){source(paste(base_dir, list(...)[[i]], sep="/"))}
 }
 #Import the different functions
-source_local("QualityMetrics_script.R", "easyrlibrary-lib/RcheckLibrary.R", "easyrlibrary-lib/miniTools.R")
+source_local("qualitymetrics_script.R", "easyrlibrary-lib/RcheckLibrary.R", "easyrlibrary-lib/miniTools.R")
 
 
 suppressMessages(library(ropls)) ## to be used in qualityMetricsF

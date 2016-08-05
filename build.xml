@@ -1,6 +1,6 @@
 <project name="qualitymetrics" default="all">
 
-	<property name="tool.xml" value="QualityMetrics_config.xml"/>
+	<property name="tool.xml" value="qualitymetrics_config.xml"/>
 	<property name="conda.dir" value="${user.home}/w4m-conda"/>
 
 	<!--~~~

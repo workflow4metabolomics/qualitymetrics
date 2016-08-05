@@ -2,7 +2,7 @@
   <description>Metrics and graphics to check the quality of the data</description>
 
   <requirements>
-    <requirement type="package" version="3.3.1">R</requirement>
+    <requirement type="package" version="3.2.2">R</requirement>
     <requirement type="package">r-batch</requirement>
     <requirement type="package" version="1.4.2">bioconductor-ropls</requirement>
   </requirements>
@@ -12,7 +12,7 @@
   </stdio>
   
   <command><![CDATA[
-  $__tool_directory__/QualityMetrics_wrapper.R
+  $__tool_directory__/qualitymetrics_wrapper.R
   dataMatrix_in "$dataMatrix_in"
   sampleMetadata_in "$sampleMetadata_in"
   variableMetadata_in "$variableMetadata_in"
@@ -260,7 +260,7 @@ CHANGES IN VERSION 2.2.3
 
 INTERNAL MODIFICATIONS
 
-Modifications of the **QualityMetrics_script.R** file to handle the recent **ropls** package versions (i.e. 1.3.15 and above) which use S4 classes
+Modifications of the **qualitymetrics_script.R** file to handle the recent **ropls** package versions (i.e. 1.3.15 and above) which use S4 classes
 
 Creating tests for the R code
 
@@ -345,7 +345,7 @@ Figure output
 | You should obtain with this very simplified dataset the following figure:
 |
 
-.. image:: QualityMetrics_workingExampleImage.png
+.. image:: qualitymetrics_workingExampleImage.png
         :width: 600
 
 -->

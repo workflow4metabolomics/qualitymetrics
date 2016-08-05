@@ -39,7 +39,7 @@ readTableF <- function(fileC, typeC = c("matrix", "dataframe")[1]) {
 wrapperCallF <- function(paramLs) {
 
 	## Set program path
-    	wrapperPathC <- file.path(dirname(scriptPathC), "..", "QualityMetrics_wrapper.R")
+    	wrapperPathC <- file.path(dirname(scriptPathC), "..", "qualitymetrics_wrapper.R")
 
 	## Set arguments
 	argLs <- NULL
@@ -55,7 +55,7 @@ wrapperCallF <- function(paramLs) {
 	wrapperCodeN <- system(wrapperCallC)
 
 	if (wrapperCodeN != 0)
-		stop("Error when running QualityMetrics_wrapper.R.")
+		stop("Error when running qualitymetrics_wrapper.R.")
 
 	## Get output
 	outLs <- list()
