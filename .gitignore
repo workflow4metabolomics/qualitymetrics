@@ -4,3 +4,5 @@ tool_test_output.json
 .#*
 \#*#
 *~
+.sw
+.*.swp
