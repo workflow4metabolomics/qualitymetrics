@@ -1,5 +1,7 @@
-## Metrics and graphics to assess the quality of the data 
-#### A Galaxy module from the [Workflow4metabolomics](http://workflow4metabolomics.org) project
+Metrics and graphics to assess the quality of the data
+======================================================
+
+A Galaxy module from the [Workflow4metabolomics](http://workflow4metabolomics.org) infrastructure  
 
 Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetrics.svg?branch=master)](https://travis-ci.org/workflow4metabolomics/qualitymetrics).
 
@@ -17,24 +19,36 @@ Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetr
 ### Installation
 
 * Configuration file:
-    + **qualitymetrics_config.xml**  
+    + `qualitymetrics_config.xml`  
 * Image files: 
-    + **static/images/QualityControl.png**    
-    + **static/images/qualitymetrics_workingExampleImage.png**      
+    + `static/images/QualityControl.png`    
+    + `static/images/qualitymetrics_workingExampleImage.png`      
 * Wrapper file:
-    + **qualitymetrics_wrapper.R**  
+    + `qualitymetrics_wrapper.R`  
 * Script file:
-    + **qualitymetrics_script.R**  
-* R packages  
-    + **batch** from CRAN      
-> install.packages("batch", dep=TRUE)    
-    + **ropls** from Bioconductor  
-> source("http://www.bioconductor.org/biocLite.R")  
-> biocLite("ropls")      
+    + `qualitymetrics_script.R`  
+* R packages
+  + **batch** from CRAN  
+  
+    ```r
+    install.packages("batch", dep=TRUE)  
+    ```
+
+  + **ropls** from Bioconductor  
+  
+    ```r
+    source("http://www.bioconductor.org/biocLite.R")  
+    biocLite("ropls")      
+    ```
 
 ### Tests
 
-The code in the wrapper can be tested by running the **runit/qualitymetrics_runtests.R** R file 
+The code in the wrapper can be tested by running the `runit/qualitymetrics_runtests.R` R file
+
+You will need to install **RUnit** package in order to make it run:
+```r
+install.packages('RUnit', dependencies = TRUE)
+```
 
 ### News
 
@@ -42,20 +56,18 @@ The code in the wrapper can be tested by running the **runit/qualitymetrics_runt
 
 INTERNAL MODIFICATION    
 
-    o Additional running and installation tests added with planemo, conda, and travis  
+ * Additional running and installation tests added with planemo, conda, and travis  
 
 ##### CHANGES IN VERSION 2.2.3  
 
 INTERNAL MODIFICATION    
 
-    o Modifications of the 'qualitymetrics_script.R' file to handle the recent 'ropls' package versions (i.e. 1.3.15 and above) which use S4 classes  
+ * Modifications of the 'qualitymetrics_script.R' file to handle the recent 'ropls' package versions (i.e. 1.3.15 and above) which use S4 classes  
 
-    o Creating tests for the R code  
+ * Creating tests for the R code  
     
 ##### CHANGES IN VERSION 2.2.2
 
 INTERNAL MODIFICATION  
 
-    o Minor internal modification
-    
-***
+ * Minor internal modification
