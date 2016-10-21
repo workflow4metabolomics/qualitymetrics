@@ -7,8 +7,8 @@ Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetr
 
 ### Description
 
-**Version:** 2.2.4  
-**Date:** 2016-08-04  
+**Version:** 2.2.6  
+**Date:** 2016-10-21  
 **Author:** Marion Landi (INRA, PFEM), Mélanie Pétéra (INRA, PFEM), and Etienne A. Thévenot (CEA, LIST)  
 **Email:** [melanie.petera(at)clermont.inra.fr](mailto:melanie.petera@clermont.inra.fr), [etienne.thevenot(at)cea.fr](mailto:etienne.thevenot@cea.fr)  
 **Citation:**  
@@ -51,6 +51,12 @@ install.packages('RUnit', dependencies = TRUE)
 ```
 
 ### News
+
+##### CHANGES IN VERSION 2.2.6  
+
+MINOR MODIFICATION  
+
+ * Graphic (pool_CV inferior to 30% metric): pools with a NaN value are now counted as having a value superior to 30% (to avoid generating a final NA metric value)  
 
 ##### CHANGES IN VERSION 2.2.4  
 

@@ -424,14 +424,16 @@ qualityMetricsF <- function(datMN,
         text(1, 0.45, adj=0, cex = 1.1, labels = paste0("mean: ", signif(mean(datMN, na.rm=TRUE), 2)))
         text(1, 0.35, adj=0, cex = 1.1, labels = paste0("max: ", signif(max(datMN, na.rm=TRUE), 2)))
         if("sampleType" %in% colnames(samDF) &&
-           "pool" %in% samDF[, "sampleType"])
+           "pool" %in% samDF[, "sampleType"]) {
+            poolCvNanVl <- is.nan(varDF[, "pool_CV"])
             text(1,
                  0.25,
                  adj=0, cex = 1.1,
                  labels = paste0("pool CV < ",
                      round(thrVn["poolCv"] * 100), "%: ",
-                     round(sum(varDF[, "pool_CV"] < thrVn["poolCv"]) / nrow(varDF) * 100),
+                     round(sum(varDF[!poolCvNanVl, "pool_CV", drop = FALSE] < thrVn["poolCv"]) / nrow(varDF) * 100),
                      "%"))
+            }
 
         text(1, 0.1, adj=0, labels = paste0("Thresholds used in plots:"))
         text(1, 0, adj=0, labels = paste0("  p-value = ", thrVn["pvalue"]))
