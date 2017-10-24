@@ -488,7 +488,6 @@ qualityMetricsF <- function(datMN,
         par(mar = marLs[["msd"]])
         plot(apply(datMN, 2, function(y) mean(y, na.rm = TRUE)),
              apply(datMN, 2, function(y) sd(y, na.rm = TRUE)),
-             col=obsColVc,
              pch = 18,
              xlab = "",
              ylab = "")
@@ -642,6 +641,8 @@ qualityMetricsF <- function(datMN,
     ## Constants
     ##----------
 
+    modNamC <- "Quality Metrics" ## module name
+    
     epsN <- .Machine[["double.eps"]] ## [1] 2.22e-16
 
 
@@ -649,8 +650,14 @@ qualityMetricsF <- function(datMN,
     ## Start
     ##------------------------------
 
-    if(!is.null(log.txtC))
+    if(!is.null(log.txtC)) {
+        
         sink(log.txtC)
+        
+        cat("\nStart of the '", modNamC, "' Galaxy module call: ",
+            format(Sys.time(), "%a %d %b %Y %X"), "\n", sep="")
+
+    }
 
     ## Description
     ##------------
@@ -885,8 +892,28 @@ qualityMetricsF <- function(datMN,
     ##------------------------------
 
 
-    if(!is.null(log.txtC))
+    if(!is.null(log.txtC)) {
+
+        cat("\nEnd of '", modNamC, "' Galaxy module call: ",
+            as.character(Sys.time()), "\n", sep = "")
+
+        cat("\n\n\n============================================================================")
+        cat("\nAdditional information about the call:\n")
+        cat("\n1) Parameters:\n")
+        print(args)
+
+        cat("\n2) Session Info:\n")
+        sessioninfo <- sessionInfo()
+        cat(sessioninfo$R.version$version.string,"\n")
+        cat("Main packages:\n")
+        for (pkg in names(sessioninfo$otherPkgs)) { cat(paste(pkg,packageVersion(pkg)),"\t") }; cat("\n")
+        cat("Other loaded packages:\n")
+        for (pkg in names(sessioninfo$loadedOnly)) { cat(paste(pkg,packageVersion(pkg)),"\t") }; cat("\n")        
+
+        cat("============================================================================\n")
+        
         sink()
+    }
 
     options(stingsAsFactors = strAsFacL)
     options(warn = optWrnN)
