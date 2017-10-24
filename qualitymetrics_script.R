@@ -488,7 +488,6 @@ qualityMetricsF <- function(datMN,
         par(mar = marLs[["msd"]])
         plot(apply(datMN, 2, function(y) mean(y, na.rm = TRUE)),
              apply(datMN, 2, function(y) sd(y, na.rm = TRUE)),
-             col=obsColVc,
              pch = 18,
              xlab = "",
              ylab = "")
