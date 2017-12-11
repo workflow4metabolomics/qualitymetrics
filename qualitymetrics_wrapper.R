@@ -17,6 +17,35 @@
 
 
 library(batch) #necessary for parseCommandArgs function
+
+# Prog. constants
+argv <- commandArgs(trailingOnly = FALSE)
+script.path <- sub("--file=","",argv[grep("--file=", argv)])
+prog.name <- basename(script.path)
+
+# Test Help
+if (length(grep('-h', argv)) > 0) {
+  cat("Usage: Rscript ", 
+    prog.name,
+    "{args} \n",
+    "parameters: \n",
+    "\t-h: display this help message and exit (optional) \n",
+    "\tdataMatrix_in {file}: set the input data matrix file (mandatory) \n",
+    "\tsampleMetadata_in {file}: set the input sample metadata file (mandatory) \n",
+    "\tvariableMetadata_in {file}: set the input variable metadata_in file (mandatory) \n",
+    "\tCV {bool}: set the \"Coefficient of Variation\" option (mandatory) \n",
+    "\tCompa {val}: set the Compa option (mandatory) \n",
+    "\tseuil {val}: set the seuil option (mandatory) \n",
+    "\tpoolAsPool1L {val}: set the poolAsPool1L option (optional) \n",
+    "\tsampleMetadata_out {file}: set the output sample metadata file (mandatory) \n",
+    "\tvariableMetadata_out {file}: set the outputvariable metadata file (mandatory) \n",
+    "\tfigure {file}: set the output figure file (mandatory) \n",
+    "\tinformation {file}: set the output information file (mandatory) \n",
+    "\n")
+  quit(status = 0)
+}
+
+# Normal parameters reading
 args = parseCommandArgs(evaluate=FALSE) #interpretation of arguments given in command line as an R list of objects
 
 source_local <- function(...){
