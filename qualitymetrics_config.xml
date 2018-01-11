@@ -1,4 +1,4 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2.2.6">
+<tool id="quality_metrics" name="Quality Metrics" version="2.2.8">
   <description>Metrics and graphics to check the quality of the data</description>
 
   <requirements>
@@ -179,8 +179,10 @@ Variable metadata file
 	|
 
 Note:
-	| Required formats for the dataMatrix, sampleMetadata, and variableMetadata files are described in the **HowTo** entitled 'Format Data For Postprocessing' available on the main page of Workflow4Metabolomics.org; the formats of the 3 tables can be further checked with the **Check Format** module
+	| **Required formats** for the dataMatrix, sampleMetadata, and variableMetadata files are described in the **HowTo** entitled 'Format Data For Postprocessing' available on the main page of Workflow4Metabolomics.org (http://web11.sb-roscoff.fr/download/w4m/howto/w4m_HowToFormatDataForPostprocessing_v02.pdf)
+	| The formats of the 3 tables can be further checked with the **Check Format** module
 	|
+
 
 Coefficient of Variation
 	| If 'yes' (not default): variables are classed according to the Coefficient of Variation (CV)
@@ -250,8 +252,16 @@ See the **W4M00001b_sacurine-complete** shared history in the **Shared Data/Publ
 NEWS
 ----
 
+CHANGES IN VERSION 2.2.8
+========================
+
+MINOR MODIFICATION
+
+In the case of a distinct sample order between dataMatrix and sampleMetadata, the sample order from the dataMatrix is matched to sampleMetadata internally for the computations and graphics without modifying the order in the sampleMetadata output (a warning is generated in the information file); to get the re-ordered dataMatrix as output, please use the Check Format module
+
 CHANGES IN VERSION 2.2.6
 ========================
+
 MINOR MODIFICATION
 
 Graphic: pool_CV inferior to 30%: pools with a NaN value are now counted as having a superior to 30% value (to avoid generating an NA metric value)
@@ -290,70 +300,8 @@ Minor internal changes
   Pages                    = {396-406},
   Volume                   = {29},
   }</citation>
+  <citation type="doi">10.1016/j.biocel.2017.07.002</citation>
   <citation type="doi">10.1093/bioinformatics/btu813</citation>
 </citations>
-
-<!--
-
-Input files
-===========
-
-| **To generate the "dataMatrix", "sampleMetadata" and "variableMetadata" files:**
-|   **1) copy/paste the values below in three distinct .txt files**
-|   **2) use the "Get Data" / "Upload File" in the "Tools" (left) panel from the Galaxy page by choosing:**
-|     **Convert spaces to tabs: 'Yes'**
-| 
-
-**dataMatrix file**::
-
-	dataMatrix QC_4 sam_44 sam_18 sam_23 blk_3 sam_9 sam_22 QC_6 blk_4
-	met_031 5601185.9 4446133.4 4144765.4 3085899.9 NA 6748534.9 5819543.8 3256720.3 NA
-	met_032 4.07 4.08 4.11 4.1 NA 4.04 4.13 4.11 NA
-	met_033 1448205184 1456986135 993364802.3 1162711600 5569143.2 1043559922 1465003454 1052094028 5247494.3
-	met_034 4.11 4.21 4.18 4.1 4.09 4.1 4.14 4.11 4.08
-	met_035 3777580.7 2296751 1890711.7 1767424.6 6567.5 1906253.5 3043253.9 2856958.5 7940.8
-	met_036 4.12 4.21 4.26 4.1 4.11 4.22 4.27 4.12 4.2
-	met_037 4982658.7 3751181.8 4219033.2 2425759.9 NA 11978184.4 4306459.5 3352187 NA
-	met_038 4.45 4.38 4.4 4.4 NA 4.44 4.46 4.32 NA
-	met_039 6658087.7 3231434.7 2932986.5 4098788.3 NA 3691132.6 6108614.4 4541941.9 NA
-	met_040 4.49 4.56 4.48 4.5 NA 4.45 4.54 4.46 NA
-	
-**sampleMetadata file**::
-
-	sampleMetadata injectionOrder batch sampleType
-	QC_4 19 batch1 pool
-	sam_44 20 batch1 sample
-	sam_18 23 batch1 sample
-	sam_23 27 batch1 sample
-	blk_3 31 batch1 blank
-	sam_9 34 batch1 sample
-	sam_22 38 batch1 sample
-	QC_6 42 batch1 pool
-	blk_4 43 batch1 blank
-
-**variableMetadata file**::
-
-	variableMetadata number
-	met_031 31
-	met_032 32
-	met_033 33
-	met_034 34
-	met_035 35
-	met_036 36
-	met_037 37
-	met_038 38
-	met_039 39
-	met_040 40
-
-Figure output
-=============
-
-| You should obtain with this very simplified dataset the following figure:
-|
-
-.. image:: qualitymetrics_workingExampleImage.png
-        :width: 600
-
--->
 
 </tool>

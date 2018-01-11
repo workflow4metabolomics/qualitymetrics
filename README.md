@@ -7,8 +7,8 @@ Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetr
 
 ### Description
 
-**Version:** 2.2.6  
-**Date:** 2016-10-21  
+**Version:** 2.2.8  
+**Date:** 2018-01-11  
 **Author:** Marion Landi (INRA, PFEM), Mélanie Pétéra (INRA, PFEM), and Etienne A. Thévenot (CEA, LIST)  
 **Email:** [melanie.petera(at)clermont.inra.fr](mailto:melanie.petera@clermont.inra.fr), [etienne.thevenot(at)cea.fr](mailto:etienne.thevenot@cea.fr)  
 **Citation:**  
@@ -50,7 +50,13 @@ You will need to install **RUnit** package in order to make it run:
 install.packages('RUnit', dependencies = TRUE)
 ```
 
-### News
+### News  
+
+##### CHANGES IN VERSION 2.2.8  
+
+MINOR MODIFICATION  
+
+In the case of a distinct sample order between dataMatrix and sampleMetadata, the sample order from the dataMatrix is matched to sampleMetadata internally for the computations and graphics without modifying the order in the sampleMetadata output (a warning is generated in the information file); to get the re-ordered dataMatrix as output, please use the Check Format module  
 
 ##### CHANGES IN VERSION 2.2.6  
 
