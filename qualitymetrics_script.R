@@ -659,6 +659,31 @@ qualityMetricsF <- function(datMN,
 
     }
 
+    
+    ## Checking the numerical type of the dataMatrix
+    ##----------------------------------------------
+
+
+    if(mode(datMN) != "numeric") {
+        sink()
+        stop("dataMatrix is not of numeric type;\ncheck your tables with the Check Format module\n",
+             call. = FALSE)
+    }
+
+    
+    ## Re-ordering dataMatrix samples if need (internally only)
+    ##---------------------------------------------------------
+
+    
+    if(!identical(rownames(datMN), samDF[, 1])) {
+
+        cat("\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   WARNING   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\nThe sample order is not identical in dataMatrix and sampleMetadata;\nRe-ordering of the dataMatrix samples will be performed internally in this module\nfor the computation of the metrics,\nwithout changing the orders in the sampleMetadata output;\n\nTo get a re-ordered dataMatrix as output, please use the Check Format module\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+
+        datMN <- datMN[samDF[, 1], , drop = FALSE]
+        
+    }
+
+    
     ## Description
     ##------------
 
