@@ -56,6 +56,7 @@ if(FALSE){
 }
 
 QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
+                           sample.type.col.name,
                            CV, Compa, seuil, poolAsPool1L,
                            ion.file.out, meta.samp.file.out, meta.ion.file.out, fig.out, log.out){
   # This function allows to analyse data to check its quality
@@ -101,19 +102,19 @@ samp.id <- samp.id$id.match
 if(CV){
 
   # Checking the sampleType variable
-  if(is.null(meta.samp.data$sampleType)){
+  if(is.null(meta.samp.data[[sample.type.col.name]])){
     err.stock <- c(err.stock,"\n-------",
-                   "\nWarning : no 'sampleType' variable detected in sample meta-data !",
+                   paste0("\nWarning : no '", sample.type.col.name, "' variable detected in sample meta-data !"),
                    "\nCV can not be calculated.\n-------\n")
   }else{
-    if(!("pool"%in%levels(factor(meta.samp.data$sampleType)))){
+    if(!("pool"%in%levels(factor(meta.samp.data[[sample.type.col.name]])))){
       err.stock <- c(err.stock,"\n-------",
-                     "\nWarning : no 'pool' detected in 'sampleType' variable (sample meta-data) !",
+                     paste0("\nWarning : no 'pool' detected in '", sample.type.col.name, "' variable (sample meta-data) !"),
                      "\nCV can not be calculated.\n-------\n")
     }else{
-      if((!("sample"%in%levels(factor(meta.samp.data$sampleType))))&(Compa)){
+      if((!("sample"%in%levels(factor(meta.samp.data[[sample.type.col.name]]))))&(Compa)){
         err.stock <- c(err.stock,"\n-------",
-                       "\nWarning : no 'sample' detected in 'sampleType' variable (sample meta-data) !",
+                       paste0("\nWarning : no 'sample' detected in '", sample.type.col.name, "' variable (sample meta-data) !"),
                        "\nCV can not be calculated.\n-------\n")
       }else{
 
@@ -121,11 +122,11 @@ if(CV){
   tmp.ion <- data.frame(CV.ind=rep(NA,nrow(ion.data)),CV.samp=rep(NA,nrow(ion.data)),
                         CV.pool=rep(NA,nrow(ion.data)),ion.data,stringsAsFactors=FALSE)
   # CV samples
-  tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="sample"),1])
+  tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data[[sample.type.col.name]]=="sample"),1])
   tmp.ion$CV.samp <- apply(tmp.ion[,tmp.samp],1,function(x)sd(x, na.rm = TRUE)) / rowMeans(tmp.ion[,tmp.samp], na.rm = TRUE)
   tmp.ion$CV.samp[which(apply(tmp.ion[,tmp.samp],1,function(x)sd(x, na.rm = TRUE))==0)] <- 0
   # CV pools
-  tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data$sampleType=="pool"),1])
+  tmp.samp <- which(colnames(tmp.ion)%in%meta.samp.data[which(meta.samp.data[[sample.type.col.name]]=="pool"),1])
   tmp.ion$CV.pool <- apply(tmp.ion[,tmp.samp],1,function(x)sd(x, na.rm = TRUE)) / rowMeans(tmp.ion[,tmp.samp], na.rm = TRUE)
   tmp.ion$CV.pool[which(apply(tmp.ion[,tmp.samp],1,function(x)sd(x, na.rm = TRUE))==0)] <- 0
   # CV indicator
@@ -149,12 +150,13 @@ if(CV){
 datMN <- t(as.matrix(ion.data[, -1]))
 colnames(datMN) <- ion.data[, 1]
 datMN <- datMN[, meta.ion.data[, 1]] ## in case meta.ion.data has been re-ordered during the CV = TRUE computations
-quaLs <- qualityMetricsF(datMN,
-                         meta.samp.data,
-                         meta.ion.data,
-                         poolAsPool1L,
-                         fig.out,
-                         log.out)
+quaLs <- qualityMetricsF(datMN = datMN,
+                         samDF = meta.samp.data,
+                         varDF = meta.ion.data,
+                         sample.type.col.name = sample.type.col.name,
+                         pooAsPo1L = poolAsPool1L,
+                         fig.pdfC = fig.out,
+                         log.txtC = log.out)
 meta.samp.data <- quaLs[["samDF"]]
 meta.ion.data <- quaLs[["varDF"]]
 
@@ -191,6 +193,7 @@ write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=F
 qualityMetricsF <- function(datMN,
                             samDF,
                             varDF,
+                            sample.type.col.name,
                             pooAsPo1L = TRUE,
                             fig.pdfC = NULL,
                             log.txtC = NULL) {
@@ -282,7 +285,7 @@ qualityMetricsF <- function(datMN,
             palVc <- palVc[!(palVc %in% c("black", "red", "green3"))]
 
             ## filling in the types with dedicated colors
-            samTypVc <- sort(unique(samDF[, "sampleType"]))
+            samTypVc <- sort(unique(samDF[, sample.type.col.name]))
             samColVc <- character(length(samTypVc))
             if("blank" %in% samTypVc)
                 samColVc[grepl("blank", samTypVc)] <- "black"
@@ -326,8 +329,8 @@ qualityMetricsF <- function(datMN,
         ## Colors
         ##-------
 
-        if("sampleType" %in% colnames(samDF)) {
-            obsColVc <- obsColF(samDF[, "sampleType"])
+        if(sample.type.col.name %in% colnames(samDF)) {
+            obsColVc <- obsColF(samDF[, sample.type.col.name])
         } else
             obsColVc <- rep("black", nrow(samDF))
 
@@ -367,7 +370,7 @@ qualityMetricsF <- function(datMN,
              col = obsColVc,
              labels = rownames(datMN))
 
-        if("sampleType" %in% colnames(samDF)) {
+        if(sample.type.col.name %in% colnames(samDF)) {
             obsColVuc <- obsColVc[sort(unique(names(obsColVc)))]
             legOrdVc <- c("blank", paste0("pool", 8:1), "pool", "other", "sample")
             obsColVuc <- obsColVuc[legOrdVc[legOrdVc %in% names(obsColVuc)]]
@@ -423,8 +426,8 @@ qualityMetricsF <- function(datMN,
         text(1, 0.55, adj=0, cex = 1.1, labels = paste0("median: ", signif(median(datMN, na.rm=TRUE), 2)))
         text(1, 0.45, adj=0, cex = 1.1, labels = paste0("mean: ", signif(mean(datMN, na.rm=TRUE), 2)))
         text(1, 0.35, adj=0, cex = 1.1, labels = paste0("max: ", signif(max(datMN, na.rm=TRUE), 2)))
-        if("sampleType" %in% colnames(samDF) &&
-           "pool" %in% samDF[, "sampleType"]) {
+        if(sample.type.col.name %in% colnames(samDF) &&
+           "pool" %in% samDF[, sample.type.col.name]) {
             poolCvNanVl <- is.nan(varDF[, "pool_CV"])
             text(1,
                  0.25,
@@ -463,8 +466,8 @@ qualityMetricsF <- function(datMN,
         driSamDF <- driSamDF[ordVi, ]
 
         driColVc <- rep("black", nrow(driDatMN))
-        if("sampleType" %in% colnames(driSamDF))
-            driColVc <- obsColF(driSamDF[, "sampleType"])
+        if(sample.type.col.name %in% colnames(driSamDF))
+            driColVc <- obsColF(driSamDF[, sample.type.col.name])
 
         plot(rowSums(driDatMN, na.rm=TRUE),
              col = driColVc,
@@ -698,9 +701,9 @@ qualityMetricsF <- function(datMN,
     cat("median:", signif(median(datMN, na.rm=TRUE), 2), "\n")
     cat("max:", signif(max(datMN, na.rm=TRUE), 2), "\n")
 
-    if("sampleType" %in% colnames(samDF)) {
+    if(sample.type.col.name %in% colnames(samDF)) {
         cat("\nSample types:\n", sep = "")
-        print(table(samDF[, "sampleType"]))
+        print(table(samDF[, sample.type.col.name]))
         cat("\n", sep="")
     }
 
@@ -712,11 +715,11 @@ qualityMetricsF <- function(datMN,
 
     ## 'blank' observations
 
-    if("sampleType" %in% colnames(samDF) && "blank" %in% samDF[, "sampleType"]) {
+    if(sample.type.col.name %in% colnames(samDF) && "blank" %in% samDF[, sample.type.col.name]) {
 
         cat("\nVariables: Blank mean, sd, and CV\n", sep="")
 
-        blkVl <- samDF[, "sampleType"] == "blank"
+        blkVl <- samDF[, sample.type.col.name] == "blank"
 
         if(sum(blkVl) == 1)
             varDF[, "blank_mean"] <- datMN[blkVl, ]
@@ -735,11 +738,11 @@ qualityMetricsF <- function(datMN,
 
     ## 'sample' observations
 
-    if("sampleType" %in% colnames(samDF) && "sample" %in% samDF[, "sampleType"]) {
+    if(sample.type.col.name %in% colnames(samDF) && "sample" %in% samDF[, sample.type.col.name]) {
 
         cat("\nVariables: Sample mean, sd, and CV\n", sep="")
 
-        samVl <- samDF[, "sampleType"] == "sample"
+        samVl <- samDF[, sample.type.col.name] == "sample"
 
         if(sum(samVl) == 1)
             varDF[, "sample_mean"] <- datMN[samVl, ]
@@ -767,11 +770,11 @@ qualityMetricsF <- function(datMN,
 
     ## 'pool' observations
 
-    if("sampleType" %in% colnames(samDF) && "pool" %in% samDF[, "sampleType"]) {
+    if(sample.type.col.name %in% colnames(samDF) && "pool" %in% samDF[, sample.type.col.name]) {
 
         cat("\nVariables: Pool mean, sd, and CV\n", sep="")
 
-        pooVl <- samDF[, "sampleType"] == "pool"
+        pooVl <- samDF[, sample.type.col.name] == "pool"
 
         if(sum(pooVl) == 1)
             varDF[, "pool_mean"] <- datMN[pooVl, ]
@@ -800,11 +803,11 @@ qualityMetricsF <- function(datMN,
 
     ## 'pool' dilutions
 
-    if("sampleType" %in% colnames(samDF) && any(grepl("pool.+", samDF[, "sampleType"]))) {
+    if(sample.type.col.name %in% colnames(samDF) && any(grepl("pool.+", samDF[, sample.type.col.name]))) {
 
-        pooVi <- grep("pool.*", samDF[, "sampleType"]) ## pool, pool2, pool4, poolInter, ...
+        pooVi <- grep("pool.*", samDF[, sample.type.col.name]) ## pool, pool2, pool4, poolInter, ...
 
-        pooNamVc <- samDF[pooVi, "sampleType"]
+        pooNamVc <- samDF[pooVi, sample.type.col.name]
 
         if(pooAsPo1L) {
 
