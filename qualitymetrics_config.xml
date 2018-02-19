@@ -33,6 +33,7 @@
   
   sampleMetadata_out "$sampleMetadata_out"      
   variableMetadata_out "$variableMetadata_out"
+  sampleTypeColName "$advPar.sampleTypeColName"
   figure "$figure"
   information "$information"
   ]]></command>
@@ -67,9 +68,11 @@
       </param>     
       <when value="full">
 	<param name="poolAsPool1L" type="boolean" checked="true" truevalue="TRUE" falsevalue="FALSE" label="Use 'pool' samples as 'pool1' when computing the correlation with dilution?"/>
+	<param name="sampleTypeColName" type="text" size="64" value="sampleType" label="Set the name for the sample type column."/>
       </when>
       <when value="default">
       	<param name="poolAsPool1L" type="hidden" value="TRUE"/>
+		<param name="sampleTypeColName" type="hidden" value="sampleType"/>
       </when>
     </conditional>
     
@@ -90,6 +93,16 @@
       <param name="CV" value="FALSE"/>
       <param name="optC" value="default"/>
       <output name="sampleMetadata_out" file="output-sampleMetadata.tsv"/>
+      <output name="variableMetadata_out" file="output-variableMetadata.tsv"/>
+    </test>
+    <test>
+      <param name="dataMatrix_in" value="input-dataMatrix.tsv"/>
+      <param name="sampleMetadata_in" value="input-sampleMetadata-customSampleType.tsv"/>
+      <param name="variableMetadata_in" value="input-variableMetadata.tsv"/>
+      <param name="sampleTypeColName" value="MySampType"/>
+      <param name="CV" value="FALSE"/>
+      <param name="optC" value="default"/>
+      <output name="sampleMetadata_out" file="output-sampleMetadata-customSampleType.tsv"/>
       <output name="variableMetadata_out" file="output-variableMetadata.tsv"/>
     </test>
   </tests>
