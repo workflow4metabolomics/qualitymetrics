@@ -226,6 +226,21 @@ Threshold (only if CV=yes)
 PoolAsPool1 (Advanced parameter)
 	| If 'poolN' (where N is a dilution factor) sample types are present in the 'sampleType' column of the sample metadata file, the Pearson correlation of the intensity with the dilution factor is computed for each variable; the 'PoolAsPool1' parameter indicates whether samples of 'pool' types should be considered as 'pool1' (and hence included in the computation of dilution correlations); default is TRUE
 	
+sampleTypeColName (Advanced parameter)
+	| If the sample type column of the sample metadata file is not named "sampleType", then set this field to the right name.
+ default is "sampleType"
+	
+sampleTypeTagPool (Advanced parameter)
+	| Set the tag used to identify pool samples inside the sample type column of the sample metadata file.
+ default is "pool"
+	
+sampleTypeTagBlank (Advanced parameter)
+	| Set the tag used to identify blank samples inside the sample type column of the sample metadata file.
+ default is "blank"
+	
+sampleTypeTagSample (Advanced parameter)
+	| Set the tag used to identify real samples inside the sample type column of the sample metadata file.
+ default is "sample"
 
 ------------
 Output files
