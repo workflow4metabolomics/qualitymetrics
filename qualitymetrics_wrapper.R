@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript --vanilla --slave --no-site-file
+#!/usr/bin/env Rscript --vanilla
 
 ################################################################################################
 # WRAPPER FOR QC_script.R (ANALYSES FOR QUALITY CONTROL)                                       #
