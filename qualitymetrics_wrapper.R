@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript --vanilla
+#!/usr/bin/env Rscript
 
 ################################################################################################
 # WRAPPER FOR QC_script.R (ANALYSES FOR QUALITY CONTROL)                                       #
