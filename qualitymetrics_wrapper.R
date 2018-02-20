@@ -40,6 +40,7 @@ if (length(grep('-h', argv)) > 0) {
     "\tsampleMetadata_out {file}: set the output sample metadata file (mandatory).\n",
     "\tvariableMetadata_out {file}: set the outputvariable metadata file (mandatory).\n",
     "\tsampleTypeColName {val}: the name of the column containing sample type information (mandatory).\n",
+    "\tsampleTypeTags {val}: the tags used inside the sample type column, defined as key/value pairs separated by commas (example: blank=blank,pool=pool,sample=sample) (mandatory).\n",
     "\tfigure {file}: set the output figure file (mandatory).\n",
     "\tinformation {file}: set the output information file (mandatory).\n",
     "\n")
@@ -68,8 +69,16 @@ if(length(args) < 9){ stop("NOT enough arguments !!!") }
 args$Compa <- as.logical(args$Compa)
 args$poolAsPool1L <- as.logical(args$poolAsPool1L)
 
+# Parse sample type tags
+sample.type.tags <- list()
+for (kv in strsplit(strsplit(args$sampleTypeTags, ',')[[1]], '='))
+	sample.type.tags[[kv[[1]]]] <- kv[[2]]
+if ( ! all(c('pool', 'blank', 'sample') %in% names(sample.type.tags)))
+	stop("All tags pool, blank and sample must be defined in option sampleTypeTags.")
+
+# Run quality control
 QualityControl(ion.file.in = args$dataMatrix_in, meta.samp.file.in = args$sampleMetadata_in, meta.ion.file.in = args$variableMetadata_in,
-               sample.type.col.name = args$sampleTypeColName,
+               sample.type.col.name = args$sampleTypeColName, sample.type.tags = sample.type.tags,
                CV = args$CV, Compa = args$Compa, seuil = args$seuil, poolAsPool1L = args$poolAsPool1L,
                ion.file.out = args$dataMatrix_out, meta.samp.file.out = args$sampleMetadata_out, meta.ion.file.out = args$variableMetadata_out, fig.out = args$figure, log.out = args$information)
 
@@ -79,4 +88,3 @@ QualityControl(ion.file.in = args$dataMatrix_in, meta.samp.file.in = args$sample
 
 #delete the parameters to avoid the passage to the next tool in .RData image
 rm(args)
-
