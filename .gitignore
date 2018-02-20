@@ -5,3 +5,4 @@ tool_test_output.*
 *~
 Rplots*.pdf
 output-*.tsv
+!test-data/*
