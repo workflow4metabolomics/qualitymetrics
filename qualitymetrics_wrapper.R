@@ -39,6 +39,8 @@ if (length(grep('-h', argv)) > 0) {
     "\tpoolAsPool1L {val}: set the poolAsPool1L option (optional).\n",
     "\tsampleMetadata_out {file}: set the output sample metadata file (mandatory).\n",
     "\tvariableMetadata_out {file}: set the outputvariable metadata file (mandatory).\n",
+    "\tinjectionOrderColName {val}: the name of the column containing injection order information (mandatory).\n",
+    "\tbatchColName {val}: the name of the column containing batch information (mandatory).\n",
     "\tsampleTypeColName {val}: the name of the column containing sample type information (mandatory).\n",
     "\tsampleTypeTags {val}: the tags used inside the sample type column, defined as key/value pairs separated by commas (example: blank=blank,pool=pool,sample=sample) (mandatory).\n",
     "\tfigure {file}: set the output figure file (mandatory).\n",
@@ -78,7 +80,7 @@ if ( ! all(c('pool', 'blank', 'sample') %in% names(sample.type.tags)))
 
 # Run quality control
 QualityControl(ion.file.in = args$dataMatrix_in, meta.samp.file.in = args$sampleMetadata_in, meta.ion.file.in = args$variableMetadata_in,
-               sample.type.col.name = args$sampleTypeColName, sample.type.tags = sample.type.tags,
+               injection.order.col.name = args$injectionOrderColName, batch.col.name = args$batchColName, sample.type.col.name = args$sampleTypeColName, sample.type.tags = sample.type.tags,
                CV = args$CV, Compa = args$Compa, seuil = args$seuil, poolAsPool1L = args$poolAsPool1L,
                ion.file.out = args$dataMatrix_out, meta.samp.file.out = args$sampleMetadata_out, meta.ion.file.out = args$variableMetadata_out, fig.out = args$figure, log.out = args$information)
 

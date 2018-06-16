@@ -7,9 +7,9 @@ Status: [![Build Status](https://travis-ci.org/workflow4metabolomics/qualitymetr
 
 ### Description
 
-**Version:** 2.2.8  
-**Date:** 2018-01-11  
-**Author:** Marion Landi (INRA, PFEM), Mélanie Pétéra (INRA, PFEM), and Etienne A. Thévenot (CEA, LIST)  
+**Version:** 2.2.10  
+**Date:** 2018-06-16  
+**Author:** Marion Landi (INRA, PFEM), M?lanie P?t?ra (INRA, PFEM), and Etienne A. Th?venot (CEA, LIST)  
 **Email:** [melanie.petera(at)clermont.inra.fr](mailto:melanie.petera@clermont.inra.fr), [etienne.thevenot(at)cea.fr](mailto:etienne.thevenot@cea.fr)  
 **Citation:**  
 **Licence:** CeCILL  
@@ -51,6 +51,12 @@ install.packages('RUnit', dependencies = TRUE)
 ```
 
 ### News  
+
+###### CHANGES IN VERSION 2.2.10 
+
+NEW FEATURE  
+
+ * Names of the injectionOrder, batch, and sampleType columns from sampleMetadata can now be selected by the user (as well as the names from the sample types)  
 
 ##### CHANGES IN VERSION 2.2.8  
 

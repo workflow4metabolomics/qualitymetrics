@@ -56,6 +56,7 @@ if(FALSE){
 }
 
 QualityControl <- function(ion.file.in, meta.samp.file.in, meta.ion.file.in,
+                           injection.order.col.name, batch.col.name,
                            sample.type.col.name, sample.type.tags,
                            CV, Compa, seuil, poolAsPool1L,
                            ion.file.out, meta.samp.file.out, meta.ion.file.out, fig.out, log.out){
@@ -153,6 +154,8 @@ datMN <- datMN[, meta.ion.data[, 1]] ## in case meta.ion.data has been re-ordere
 quaLs <- qualityMetricsF(datMN = datMN,
                          samDF = meta.samp.data,
                          varDF = meta.ion.data,
+                         injection.order.col.name = injection.order.col.name,
+                         batch.col.name = batch.col.name,
                          sample.type.col.name = sample.type.col.name,
                          sample.type.tags = sample.type.tags,
                          pooAsPo1L = poolAsPool1L,
@@ -194,6 +197,8 @@ write.table(meta.ion.data, meta.ion.file.out, sep="\t", row.names=FALSE, quote=F
 qualityMetricsF <- function(datMN,
                             samDF,
                             varDF,
+                            injection.order.col.name,
+                            batch.col.name,
                             sample.type.col.name,
                             sample.type.tags,
                             pooAsPo1L = TRUE,
@@ -455,12 +460,12 @@ qualityMetricsF <- function(datMN,
 
         driSamDF[, "ordIniVi"] <- 1:nrow(driDatMN)
 
-        if("injectionOrder" %in% colnames(driSamDF)) {
-            if("batch" %in% colnames(driSamDF))
-                ordVi <- order(driSamDF[, "batch"],
-                               driSamDF[, "injectionOrder"])
+        if(injection.order.col.name %in% colnames(driSamDF)) {
+            if(batch.col.name %in% colnames(driSamDF))
+                ordVi <- order(driSamDF[, batch.col.name],
+                               driSamDF[, injection.order.col.name])
             else
-                ordVi <- order(driSamDF[, "injectionOrder"])
+                ordVi <- order(driSamDF[, injection.order.col.name])
         } else
             ordVi <- 1:nrow(driDatMN)
 
