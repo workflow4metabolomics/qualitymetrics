@@ -1,4 +1,4 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2.2.8">
+<tool id="quality_metrics" name="Quality Metrics" version="2.2.8+galaxy0">
   <description>Metrics and graphics to check the quality of the data</description>
 
   <requirements>
