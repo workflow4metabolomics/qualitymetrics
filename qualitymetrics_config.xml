@@ -1,11 +1,18 @@
-<tool id="quality_metrics" name="Quality Metrics" version="2.2.8">
+<tool id="quality_metrics" name="Quality Metrics" version="2.2.8+galaxy0">
   <description>Metrics and graphics to check the quality of the data</description>
 
   <requirements>
     <requirement type="package" version="1.1_4">r-batch</requirement>
     <requirement type="package" version="1.10.0">bioconductor-ropls</requirement>
   </requirements>
-  
+	
+  <required_files>
+    <include path="qualitymetrics_wrapper.R" />
+    <include path="qualitymetrics_script.R" />
+    <include path="easyrlibrary-lib/miniTools.R" />
+    <include path="easyrlibrary-lib/RcheckLibrary.R" />
+  </required_files>  
+	
   <stdio>
     <exit_code range="1:" level="fatal" />
   </stdio>
